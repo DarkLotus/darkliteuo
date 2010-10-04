@@ -53,14 +53,21 @@ namespace DarkLiteUO
             Client.onNewMobile += new LiteClient.onNewMobileEventHandler(Client_onNewMobile);
             Client.onPlayerMove += new LiteClient.onPlayerMoveEventHandler(Client_onPlayerMove);
             Client.onTargetRequest += new LiteClient.onTargetRequestEventHandler(Client_onTargetRequest);
-            
+
+
+           
             InitializeComponent();
 
             setuptreeview();
-            ip = txtIP.Text;
-            user = txtUsername.Text;
-            pass = txtPassword.Text;
-            port = Convert.ToInt32(txtPort.Text);
+
+            Profiles Profile = Profiles.Deserialize("config.xml");
+
+            foreach (config config in Profile.Profileslist)
+            {
+                cmbProfileList.Items.Add(config);
+            }
+        
+
 
             
         }
@@ -336,11 +343,10 @@ namespace DarkLiteUO
 
         private void btnConnect_Click(object sender, EventArgs e)
         {
-            ip = txtIP.Text;
-            user = txtUsername.Text;
-            pass = txtPassword.Text;
-            port = Convert.ToInt32(txtPort.Text);
-            String status = Client.GetServerList(user, pass, ip, (ushort)port);
+            config config = (config)cmbProfileList.SelectedItem;
+            TabPage page = new TabPage(config.Username);
+            tabMain.TabPages.Add(page);
+            String status = Client.GetServerList(config.Username,config.Password,config.IP,config.Port); ;
             if (status == "SUCCESS")
             {
                 UpdateLog("Connected to server: " + Client.LoginServerAddress + ":" + Client.LoginPort.ToString());
@@ -418,6 +424,12 @@ namespace DarkLiteUO
         private void updateVarsTimer_Tick()
         {
 
+        }
+
+        private void addAccountToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Form2 form = new Form2(this);
+            form.Show();
         }
 
         
