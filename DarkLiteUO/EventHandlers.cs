@@ -85,11 +85,19 @@ namespace DarkLiteUO
         private void Client_onCharacterListReceive(ref UOLite2.LiteClient Client, System.Collections.ArrayList CharacterList)
         {
             UpdateLog("CharList Received");
-            UOLite2.Structures.CharListEntry temp = (UOLite2.Structures.CharListEntry)CharacterList[0];
+            try
+            {
+                UOLite2.Structures.CharListEntry temp = (UOLite2.Structures.CharListEntry)CharacterList[0];
+                Client.ChooseCharacter(ref temp.Name, ref temp.Password, temp.Slot);
+            }
+            catch
+            {
+                UpdateLog("Login Failed no CHarlist entries");
+            }
 
             //Chooses the first character in the list.
             // by ref? who needs ref bye bye data
-            Client.ChooseCharacter(ref temp.Name, ref temp.Password, temp.Slot);
+            
             //Client.ChooseCharacter(ref ((UOLite2.Structures.CharListEntry)CharacterList[0]).Name, ref txtPassword.Text, ((UOLite2.Structures.CharListEntry)CharacterList[0]).Slot);
         }
 
