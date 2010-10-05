@@ -11,8 +11,8 @@ namespace DarkLiteUO
     public partial class Script : IScriptInterface
     {
         LiteClient Client;
-        Form1 GUI;
-        public void Start(ref UOLite2.LiteClient Client, Form1 GUI)
+        myTabPage GUI;
+        public void Start(ref UOLite2.LiteClient Client, myTabPage GUI)
         {
             this.Client = Client;
             this.GUI = GUI;
@@ -84,7 +84,6 @@ namespace DarkLiteUO
         }
         public void ByType(ushort type)
         {
-            Item myitem;
             foreach (UOLite2.Item i in Client.Items.Items)
             {
                 if (i.Type == type) { return; }

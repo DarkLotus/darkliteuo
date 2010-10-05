@@ -12,7 +12,7 @@ namespace DarkLiteUO
     public partial class Script : IScriptInterface
     {
         private bool myScriptRunning = true;
-            ushort ScrollType = 000;
+            //ushort ScrollType = 000;
             ushort ToolType = 4031;
             uint CraftGumpType = 2002155655;
             ushort stage = 1;           

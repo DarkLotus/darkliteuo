@@ -24,7 +24,6 @@ using System.IO;
 using System.Threading;
 using System.Text;
 using System.Windows;
-using System.Threading;
 using System.Windows.Threading;
 using System.Collections.Generic;
 using System.Windows.Forms;
@@ -33,7 +32,7 @@ namespace DarkLiteUO
 {
     public interface IScriptInterface
     {
-        void Start(ref UOLite2.LiteClient Client, Form1 GUI);
+        void Start(ref UOLite2.LiteClient Client, myTabPage GUI);
         void Stop();
     }
     internal static class ScriptCompiler
@@ -48,8 +47,8 @@ namespace DarkLiteUO
         private static Assembly myScriptAssembly;
         private static int myScriptTimeout = 10;
         private static UOLite2.LiteClient Client;
-        private static Form1 GUI;
-        public static void Initialize(int stopScriptTimeout, ref UOLite2.LiteClient _client, Form1 _gui)
+        private static myTabPage GUI;
+        public static void Initialize(int stopScriptTimeout, ref UOLite2.LiteClient _client, myTabPage _gui)
         {
             Client = _client;
             GUI = _gui;

@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.txtScriptBox = new System.Windows.Forms.TextBox();
             this.btn_clearlog = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
@@ -36,6 +37,8 @@
             this.vartree = new System.Windows.Forms.TreeView();
             this.tboxSend = new System.Windows.Forms.TextBox();
             this.btnSend = new System.Windows.Forms.Button();
+            this.updateVarsTimer = new System.Windows.Forms.Timer(this.components);
+            this.Close = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // txtScriptBox
@@ -97,7 +100,7 @@
             // 
             this.tboxSend.Location = new System.Drawing.Point(0, 250);
             this.tboxSend.Name = "tboxSend";
-            this.tboxSend.Size = new System.Drawing.Size(279, 20);
+            this.tboxSend.Size = new System.Drawing.Size(331, 20);
             this.tboxSend.TabIndex = 20;
             // 
             // btnSend
@@ -109,10 +112,25 @@
             this.btnSend.Text = "Send";
             this.btnSend.UseVisualStyleBackColor = true;
             // 
+            // updateVarsTimer
+            // 
+            this.updateVarsTimer.Enabled = true;
+            this.updateVarsTimer.Interval = 1000;
+            this.updateVarsTimer.Tick += new System.EventHandler(this.updateVarsTimer_Tick);
+            // 
+            // Close
+            // 
+            this.Close.Location = new System.Drawing.Point(3, 3);
+            this.Close.Name = "Close";
+            this.Close.Size = new System.Drawing.Size(75, 23);
+            this.Close.TabIndex = 23;
+            this.Close.Text = "btnClosetab";
+            this.Close.UseVisualStyleBackColor = true;
+            this.Close.Click += new System.EventHandler(this.Close_Click);
+            // 
             // myTabPage
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.Close);
             this.Controls.Add(this.txtOutput);
             this.Controls.Add(this.txtScriptBox);
             this.Controls.Add(this.btnSend);
@@ -122,7 +140,7 @@
             this.Controls.Add(this.btn_stopscript);
             this.Controls.Add(this.vartree);
             this.Name = "myTabPage";
-            this.Size = new System.Drawing.Size(585, 307);
+            this.Size = new System.Drawing.Size(585, 300);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -138,5 +156,7 @@
         private System.Windows.Forms.TreeView vartree;
         private System.Windows.Forms.TextBox tboxSend;
         private System.Windows.Forms.Button btnSend;
+        private System.Windows.Forms.Timer updateVarsTimer;
+        private System.Windows.Forms.Button Close;
     }
 }

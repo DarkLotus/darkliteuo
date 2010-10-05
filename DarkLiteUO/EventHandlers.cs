@@ -10,7 +10,7 @@ using System.Threading;
 using UOLite2;
 namespace DarkLiteUO
 {
-    public partial class Form1 : Form
+    public partial class myTabPage : TabPage// : UserControl//
     {
         void Client_onTargetRequest(ref LiteClient Client)
         {
