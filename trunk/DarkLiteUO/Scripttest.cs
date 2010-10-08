@@ -1,4 +1,4 @@
-﻿using System;
+﻿/*using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading;
@@ -6,7 +6,7 @@ using System.Linq;
 using UOLite2;
 using System.Windows.Forms;
 using UOLite2.SupportClasses;
-
+using Ultima;
 namespace DarkLiteUO
 {
     public partial class Script : IScriptInterface
@@ -19,8 +19,10 @@ namespace DarkLiteUO
            
         public void Main()
         {
-
+            HuedTile[] mtlist = GetStatics(Client.Player.X, Client.Player.Y);
+            Tile mytile = GetLandTile(Client.Player.X, Client.Player.Y);
             GUI.UpdateLog("Script Started");
+
             HashSet<Item> Tools;
             Item Tool;
             Client.onNewGump +=new LiteClient.onNewGumpEventHandler(Client_onNewGump);
@@ -84,3 +86,4 @@ namespace DarkLiteUO
        
     }
 }
+*/

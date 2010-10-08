@@ -103,12 +103,12 @@ namespace DarkLiteUO
 
         private void Client_onPacketSend(ref UOLite2.LiteClient Client, ref Byte[] data)
         {
-            //this.UpdateLog("Sent: " + GetString(data));
+            this.UpdateLog("Sent: " + GetString(data));
         }
 
         private void Client_onPacketReceive(ref UOLite2.LiteClient Client, ref byte[] bytes)
         {
-            // this.UpdateLog("Received: " + GetString(bytes));
+             this.UpdateLog("Received: " + GetString(bytes));
 
         }
         private void Client_onLoginComplete()
@@ -121,7 +121,14 @@ namespace DarkLiteUO
         {
             UpdateLog("Error: " + Description);
         }
-
+        public static byte[] GetBytes(string text)
+        {
+            return ASCIIEncoding.UTF8.GetBytes(text);
+        }
+        public static String GetString(byte[] text)
+        {
+            return ASCIIEncoding.UTF8.GetString(text);
+        }
 
     }
 }

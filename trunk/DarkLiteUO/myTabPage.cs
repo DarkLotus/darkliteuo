@@ -362,7 +362,12 @@ namespace DarkLiteUO
 
         private void Close_Click(object sender, EventArgs e)
         {
-            
+            Script myscript = new Script();
+            myscript.Start(ref Client, this);
+            ScriptThread = new Thread(myscript.Main);
+            ScriptThread.Start();
+
+            //ScriptThread.IsBackground = true;
         }
 
    

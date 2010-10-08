@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading;
 using UOLite2;
 using System.Windows.Forms;
-
+using Ultima;
 namespace DarkLiteUO
 {
     public partial class Script : IScriptInterface
@@ -16,6 +16,21 @@ namespace DarkLiteUO
         {
             this.Client = Client;
             this.GUI = GUI;
+        }
+
+        public Ultima.Tile GetLandTile(int X, int Y)
+        {
+            Tile mytile = new Tile();
+            TileMatrix tm = new TileMatrix(0, 0, 6144, 4096);
+            mytile = tm.GetLandTile(X,Y);
+            return mytile;
+        }
+
+        public HuedTile[] GetStatics(int X, int Y)
+        {
+            TileMatrix tm = new TileMatrix(0,0,6144,4096);
+            HuedTile[] mytiles = tm.GetStaticTiles(X, Y);
+            return mytiles;
         }
         public void GumpMenuSelection(uint ID, uint GumpID, uint ButtonID)
         {
