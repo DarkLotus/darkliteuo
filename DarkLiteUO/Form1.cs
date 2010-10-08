@@ -65,14 +65,7 @@ namespace DarkLiteUO
 
 
 
-        public static byte[] GetBytes(string text)
-        {
-            return ASCIIEncoding.UTF8.GetBytes(text);
-        }
-        public static String GetString(byte[] text)
-        {
-            return ASCIIEncoding.UTF8.GetString(text);
-        }
+  
 
         private void btn_clearlog_Click(object sender, EventArgs e)
         {
@@ -99,7 +92,7 @@ namespace DarkLiteUO
 
         private void addAccountToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Form2 form = new Form2(this);
+            Options form = new Options(this);
             form.Show();
         }
 

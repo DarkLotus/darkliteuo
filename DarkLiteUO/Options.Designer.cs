@@ -1,6 +1,6 @@
 ﻿namespace DarkLiteUO
 {
-    partial class Form2
+    partial class Options
     {
         /// <summary>
         /// Required designer variable.
