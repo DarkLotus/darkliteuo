@@ -10,11 +10,13 @@ using System.Threading;
 using UOLite2;
 namespace DarkLiteUO
 {
+
     public partial class myTabPage : TabPage// : UserControl//
     {
+        
         void Client_onTargetRequest(ref LiteClient Client)
         {
-            //throw new NotImplementedException();
+                        //throw new NotImplementedException();
         }
 
         void Client_onPlayerMove(ref LiteClient Client)
@@ -103,12 +105,12 @@ namespace DarkLiteUO
 
         private void Client_onPacketSend(ref UOLite2.LiteClient Client, ref Byte[] data)
         {
-            this.UpdateLog("Sent: " + GetString(data));
+           // this.UpdateLog("Sent: " + GetString(data));
         }
 
         private void Client_onPacketReceive(ref UOLite2.LiteClient Client, ref byte[] bytes)
         {
-             this.UpdateLog("Received: " + GetString(bytes));
+            // this.UpdateLog("Received: " + GetString(bytes));
 
         }
         private void Client_onLoginComplete()

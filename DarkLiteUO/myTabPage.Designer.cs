@@ -140,7 +140,7 @@
             this.Controls.Add(this.btn_stopscript);
             this.Controls.Add(this.vartree);
             this.Name = "myTabPage";
-            this.Size = new System.Drawing.Size(656, 354);
+            this.Size = new System.Drawing.Size(581, 295);
             this.ResumeLayout(false);
             this.PerformLayout();
 
