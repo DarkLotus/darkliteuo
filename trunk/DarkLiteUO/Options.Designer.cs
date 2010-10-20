@@ -136,7 +136,7 @@
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
-            // Form2
+            // Options
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -152,7 +152,7 @@
             this.Controls.Add(this.label4);
             this.Controls.Add(this.txtCharslot);
             this.Controls.Add(this.label5);
-            this.Name = "Form2";
+            this.Name = "Options";
             this.Text = "Form2";
             this.ResumeLayout(false);
             this.PerformLayout();

@@ -28,8 +28,10 @@ namespace DarkLiteUO
             Profiles.Serialize("config.xml", profile);
             this.Close();
         }
-    }
 
+      
+    }
+   
 
     
     }
