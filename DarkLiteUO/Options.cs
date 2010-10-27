@@ -23,9 +23,9 @@ namespace DarkLiteUO
 
         private void button1_Click(object sender, EventArgs e)
         {
-            Profiles profile = new Profiles();
-            profile.Add(txtUser.Text, txtPass.Text, txtIP.Text, txtPort.Text, txtCharslot.Text);
-            Profiles.Serialize("config.xml", profile);
+            Profiles Profile = Profiles.Deserialize("config.xml");
+            Profile.Add(txtUser.Text, txtPass.Text, txtIP.Text, txtPort.Text, txtCharslot.Text);
+            Profiles.Serialize("config.xml", Profile);
             this.Close();
         }
 

@@ -9,9 +9,10 @@ using Ultima;
 using System.Drawing;
 namespace DarkLiteUO
 {
-
+   
     public partial class Script : IScriptInterface
     {
+        Boolean Debug = false;
         LiteClient Client;
         myTabPage GUI;
 
@@ -25,22 +26,106 @@ namespace DarkLiteUO
 
         private void Pathfind(ushort X, ushort Y, ushort Accuracy)
         {
-            GUI.UpdateLog("Finding Path to" + X.ToString() + "," + Y.ToString());
+            if (Debug) { GUI.UpdateLog("Finding Path to" + X.ToString() + "," + Y.ToString()); }
             List<Point> Mypath = FindPath(new Point(Client.Player.X,Client.Player.Y), new Point(X, Y));
             // traverse the path here
-            GUI.UpdateLog("Path Found. Path steps= " + Mypath.Count);
-            int i = Mypath.Count;
+            if (Debug) { GUI.UpdateLog("Path Found. Path steps= " + Mypath.Count); }
+            int temp = Mypath.Count - Accuracy - 1;
+            for (int i = 0; i <= temp; i++) // 
+            {
+                    UOLite2.Enums.Direction DirRunning = GetDirection(Client.Player.X, Client.Player.Y, Convert.ToUInt16(Mypath[i].X), Convert.ToUInt16(Mypath[i].Y));
+                    if (i >= 1)
+                    {
+                        DirRunning = GetDirection(Convert.ToUInt16(Mypath[i - 1].X), Convert.ToUInt16(Mypath[i - 1].Y), Convert.ToUInt16(Mypath[i].X), Convert.ToUInt16(Mypath[i].Y));
+                    }
+                    if ((DirRunning != UOLite2.Enums.Direction.None) && ((Client.Player.X == Mypath[i].X) && (Client.Player.Y == Mypath[i].Y)))
+                    {
+
+                uint steps = 1;
+                int m = (int)DirRunning ^ 0x80;
+                UOLite2.Enums.Direction DirWalking = (UOLite2.Enums.Direction)m;
+                if ((Client.Player.Direction != DirRunning) && (Client.Player.Direction != DirWalking) && ( i == 0)) { steps = 2; }
+                if (Debug) { GUI.UpdateLog("Taking step: " + DirRunning.ToString() + " Objective: " + Mypath[i].X.ToString() + "-" + Mypath[i].Y.ToString()); }
+                Client.Walk(ref DirRunning, ref steps);
+                for (int t = 0; t < 50; t++)
+                {
+                    if((Client.Player.X == Mypath[i].X) && (Client.Player.Y == Mypath[i].Y))
+                    {
+                        break;
+                    }
+                    Thread.Sleep(10);
+                }
+
+                if ((Client.Player.X != Mypath[i].X) && (Client.Player.Y != Mypath[i].Y))
+                {
+                    i = -1;
+                }
+                    }
+            }
+           /* foreach (Point p in Mypath)
+            {
+               
+                UOLite2.Enums.Direction DirRunning = GetDirection(Client.Player.X,Client.Player.Y,Convert.ToUInt16(p.X),Convert.ToUInt16(p.Y));
+                uint steps = 1;
+                int m = (int)DirRunning ^ 0x80;
+                UOLite2.Enums.Direction DirWalking = (UOLite2.Enums.Direction)m;
+                //if ((Client.Player.Direction != DirRunning) && (Client.Player.Direction != DirWalking)) { steps = 2; }
+                GUI.UpdateLog("Taking step: " + DirRunning.ToString() + " Objective: " + p.X.ToString() + "-" + p.Y.ToString());
+                Client.Walk(ref DirRunning, ref steps);
+                Thread.Sleep(5);
+                
+            }*/
 
         }
 
-
+        public UOLite2.Enums.Direction GetDirection(ushort X1, ushort Y1, ushort X2, ushort Y2)
+        {
+            if (X1 == X2 & Y1 == Y2)
+            {
+                return UOLite2.Enums.Direction.None;
+            }
+            else if (X1 == X2 & Y1 < Y2)
+            {
+                return UOLite2.Enums.Direction.SouthRunning;
+            }
+            else if (X1 == X2 & Y1 > Y2)
+            {
+                return UOLite2.Enums.Direction.NorthRunning;
+            }
+            else if (X1 > X2 & Y1 == Y2)
+            {
+                return UOLite2.Enums.Direction.WestRunning;
+            }
+            else if (X1 > X2 & Y1 < Y2)
+            {
+                return UOLite2.Enums.Direction.SouthWestRunning;
+            }
+            else if (X1 > X2 & Y1 > Y2)
+            {
+                return UOLite2.Enums.Direction.NorthWestRunning;
+            }
+            else if (X1 < X2 & Y1 == Y2)
+            {
+                return UOLite2.Enums.Direction.EastRunning;
+            }
+            else if (X1 < X2 & Y1 < Y2)
+            {
+                return UOLite2.Enums.Direction.SouthEastRunning;
+                //If X1 < X2 And Y1 > Y2 Then
+            }
+            else
+            {
+                return UOLite2.Enums.Direction.NorthEastRunning;
+            }
+        }
         public List<Point> FindPath(Point start, Point end)
         {
-            List<node> World = FillWorld(new Bound(32, 32), new Bound(32, 32));
+            //List<node> World = FillWorld(new Bound(32, 32), new Bound(32, 32));
+            List<node> Neighbours;
             List<Point> mypath = new List<Point>();
             List<node> Openlist = new List<node>();
             List<node> Closedlist = new List<node>();
-            Openlist.Add(new node(Client.Player.X,Client.Player.Y, Map.Trammel.Tiles.GetLandTile(Client.Player.X,Client.Player.Y).Z, Map.Trammel.Tiles.GetLandTile(Client.Player.X,Client.Player.Y).ID));
+            Openlist.Add(new node(Client.Player.X,Client.Player.Y, Map.Trammel.Tiles.GetLandTile(Client.Player.X,Client.Player.Y).Z, Map.Trammel.Tiles.GetLandTile(Client.Player.X,Client.Player.Y).ID,0));
             
             while (Openlist.Count > 0)
             {
@@ -48,37 +133,102 @@ namespace DarkLiteUO
                 node Current = Openlist.First<node>();
                 Openlist.Remove(Current);
                 Closedlist.Add(Current);
-
                 if ((Current.X == end.X) && (Current.Y == end.Y))
                 {
                     while (Current.Parent != null) {
-                    mypath.Add(new Point(Current.X,Current.Y));
+                    mypath.Insert(0,new Point(Current.X,Current.Y));
                         Current = (node)Current.Parent;
                     }
                     return mypath;
  
                 }
-                foreach( node mynode in World) {
-                    if ((mynode.flags() != Ultima.TileFlag.Impassable) && (Get2DDistance(mynode.X, mynode.Y, Current.X, Current.Y) == 1) && (!Closedlist.Contains(mynode)))
+                Neighbours = GetNeighbours(Current.X, Current.Y);
+                foreach( node mynode in Neighbours) {
+                    if ((!mynode.Blocked()) && (!Closedlist.Contains(mynode)))
                     {
-                        if (Openlist.Contains(mynode))
+                        if (Openlist.Exists(delegate(node Mynode) { return ((Mynode.X == mynode.X) && (Mynode.Y == mynode.Y)); } ))
                         {
-                            
+                            node nn = Openlist.Find(delegate(node Mynode) { return ((Mynode.X == mynode.X) && (Mynode.Y == mynode.Y)); });
+                            if (nn.G > mynode.G + Current.G)
+                            {
+                                Openlist.Remove(nn);
+                                nn.Parent = Current;
+                                nn.G = mynode.G + Current.G;
+                                nn.H = 10 * (Math.Abs(nn.X - end.X) + Math.Abs(nn.Y - end.Y));
+                                nn.F = nn.G + nn.H;
+                                Openlist.Add(nn);
+                            }
+
                         }
-                        node tempnode = mynode;
-                        tempnode.Parent = Current;
-                        tempnode.G = 10 + Current.G;
-                        tempnode.H = 10 * (Math.Abs(tempnode.X - end.X) + Math.Abs(tempnode.Y - end.Y));
-                        tempnode.F = tempnode.G + tempnode.H;
-                        //tempnode.Cost = 10 + (10 * Get2DDistance(tempnode.X,tempnode.Y,end.X,end.Y));
-                        Openlist.Add(tempnode);
-                    }
+                        else
+                        {
+                            node tempnode = mynode;
+                            tempnode.Parent = Current;
+                            tempnode.G = tempnode.G + Current.G;
+                            tempnode.H = 10 * (Math.Abs(tempnode.X - end.X) + Math.Abs(tempnode.Y - end.Y));
+                            tempnode.F = tempnode.G + tempnode.H;
+                            //tempnode.Cost = 10 + (10 * Get2DDistance(tempnode.X,tempnode.Y,end.X,end.Y));
+                            Openlist.Add(tempnode);
+                        }
+
+                        }
+                    else { Closedlist.Add(mynode); } // Maybe this works? we only need x/y in closed list.
                 }
                 Openlist.Sort();
+               //if (Openlist.Count > 1000) { Openlist.RemoveRange(1000, Openlist.Count - 1001); }
 
             }
-
+            // will return empty path
             return mypath;
+        }
+
+
+        private List<node> GetNeighbours(int x, int y)
+        {
+            List<node> mynodes = new List<node>(8);
+            int diagcost = 14;
+            int normcost = 10;
+            mynodes.Add(new node(x + 1, y, Ultima.Map.Trammel.Tiles.GetLandTile(x + 1, y).Z, Ultima.Map.Trammel.Tiles.GetLandTile(x + 1, y).ID,normcost)); // east
+            mynodes.Add(new node(x - 1, y, Ultima.Map.Trammel.Tiles.GetLandTile(x - 1, y).Z, Ultima.Map.Trammel.Tiles.GetLandTile(x - 1, y).ID, normcost)); // west
+
+            mynodes.Add(new node(x, y + 1, Ultima.Map.Trammel.Tiles.GetLandTile(x, y + 1).Z, Ultima.Map.Trammel.Tiles.GetLandTile(x, y + 1).ID, normcost)); //south
+            mynodes.Add(new node(x, y - 1, Ultima.Map.Trammel.Tiles.GetLandTile(x, y - 1).Z, Ultima.Map.Trammel.Tiles.GetLandTile(x, y - 1).ID, normcost)); //north
+            if ((!mynodes[0].Blocked()) && (!mynodes[3].Blocked()))
+            {
+                mynodes.Add(new node(x + 1, y - 1, Ultima.Map.Trammel.Tiles.GetLandTile(x + 1, y - 1).Z, Ultima.Map.Trammel.Tiles.GetLandTile(x + 1, y - 1).ID, diagcost)); // NE
+            }
+            else
+            {
+                mynodes.Add(new node(x + 1, y - 1, Ultima.Map.Trammel.Tiles.GetLandTile(x + 1, y - 1).Z, Ultima.Map.Trammel.Tiles.GetLandTile(x + 1, y - 1).ID, 1000)); // NE
+            }
+
+            if ((!mynodes[1].Blocked()) && (!mynodes[2].Blocked()))
+            {
+                mynodes.Add(new node(x - 1, y + 1, Ultima.Map.Trammel.Tiles.GetLandTile(x - 1, y + 1).Z, Ultima.Map.Trammel.Tiles.GetLandTile(x - 1, y + 1).ID, diagcost)); // SW
+            }
+            else
+            {
+                mynodes.Add(new node(x - 1, y + 1, Ultima.Map.Trammel.Tiles.GetLandTile(x - 1, y + 1).Z, Ultima.Map.Trammel.Tiles.GetLandTile(x - 1, y + 1).ID, 1000)); // SW
+            }
+
+            if ((!mynodes[0].Blocked()) && (!mynodes[2].Blocked()))
+            {
+                mynodes.Add(new node(x + 1, y + 1, Ultima.Map.Trammel.Tiles.GetLandTile(x + 1, y + 1).Z, Ultima.Map.Trammel.Tiles.GetLandTile(x + 1, y + 1).ID, diagcost)); //SE
+            }
+            else
+            {
+                mynodes.Add(new node(x + 1, y + 1, Ultima.Map.Trammel.Tiles.GetLandTile(x + 1, y + 1).Z, Ultima.Map.Trammel.Tiles.GetLandTile(x + 1, y + 1).ID, 1000)); //SE
+            }
+
+            if ((!mynodes[1].Blocked()) && (!mynodes[3].Blocked()))
+            {
+                mynodes.Add(new node(x - 1, y - 1, Ultima.Map.Trammel.Tiles.GetLandTile(x - 1, y - 1).Z, Ultima.Map.Trammel.Tiles.GetLandTile(x - 1, y - 1).ID, diagcost));//NW
+            }
+            else
+            {
+                mynodes.Add(new node(x - 1, y - 1, Ultima.Map.Trammel.Tiles.GetLandTile(x - 1, y - 1).Z, Ultima.Map.Trammel.Tiles.GetLandTile(x - 1, y - 1).ID, 1000));//NW
+            }
+            return mynodes;
         }
 
         private int Get2DDistance(int X1, int Y1, int X2, int Y2)
@@ -115,14 +265,14 @@ namespace DarkLiteUO
                 {
 
                     Tile temptile = Ultima.Map.Trammel.Tiles.GetLandTile(x, y);                    
-                    node mynode = new node(x, y, temptile.Z, temptile.ID);
+                    node mynode = new node(x, y, temptile.Z, temptile.ID,10);
                     mynodes.Add(mynode);
 
                 }
             }
             return mynodes;
         }
-        public struct node : IComparable<node>
+        public struct node : IComparable
         {
             public int X;
             public int Y;
@@ -132,39 +282,77 @@ namespace DarkLiteUO
             public int F;
             public int G;
             public int H;
-            public node(int X, int Y, int Z, int ID)
+            public node(int X, int Y, int Z, int ID, int G)
             {
                 this.X = X; this.Y = Y; this.Z = Z; this.ID = ID;
                 this.F = 0;
                 this.H = 0;
-                this.G = 0;
+                this.G = G;
                 Parent = null;
+            }
+            public static nodeComparer GetComparer()
+            {
+                return new node.nodeComparer();
             }
             public TileFlag flags()
             {
                 return TileData.LandTable[ID].Flags;
             }
-            public int CompareTo(node other)
+            public bool Blocked()
             {
-                return this.F.CompareTo(other.F);
+                HuedTile[] temptiles = Ultima.Map.Trammel.Tiles.GetStaticTiles(X, Y);
+                HuedTile[][][] mm = Ultima.Map.Trammel.Tiles.GetStaticBlock(X, Y);
+
+                foreach (HuedTile p in temptiles)
+                {
+                     if (TileData.ItemTable[p.ID].Impassable) { return true; }
+                  
+                 }
+                if (TileData.LandTable[ID].Flags == TileFlag.Impassable) { return true; }
+                return false;
             }
-        }
+            public int CompareTo(object other)
+            {
+                node newnode = (node)other;
+                return this.F.CompareTo(newnode.F);
+            }
+            public int CompareTo(node other, node.nodeComparer.ComparisonType which)
+            {
+                switch (which)
+                {
+                    case node.nodeComparer.ComparisonType.Coords:
+                        return this.X.CompareTo(other.X);
+                    case node.nodeComparer.ComparisonType.F:
+                        return this.F.CompareTo(other.F);
+                }
+                return 0;
+            }
+            public class nodeComparer : IComparer<node>
+            {
+                // enumeration of comparsion types
+                public enum ComparisonType
+                {
+                    Coords,
+                    F
+                };
+                // Tell the Employee objects to compare themselves
+                public int Compare(node lhs, node rhs)
+                {
+                    node l = (node) lhs;
+                     node r = (node) rhs;
+                    return l.CompareTo(r,WhichComparison);
+                }
+                public node.nodeComparer.ComparisonType WhichComparison
+                {
+                    get    {    return whichComparison;    }
+                    set { whichComparison=value; }
+                }
 
+                private node.nodeComparer.ComparisonType whichComparison;
+                }
+        }
+        
       
-        public Ultima.Tile GetLandTile(int X, int Y)
-        {
-            Tile mytile = new Tile();
-            TileMatrix tm = new TileMatrix(0, 0, 6144, 4096);
-            mytile = tm.GetLandTile(X,Y);
-            return mytile;
-        }
-
-        public HuedTile[] GetStatics(int X, int Y)
-        {
-            TileMatrix tm = new TileMatrix(0,0,6144,4096);
-            HuedTile[] mytiles = tm.GetStaticTiles(X, Y);
-            return mytiles;
-        }
         public uint EUOToInt(String val)
         //Code by BtbN
         {

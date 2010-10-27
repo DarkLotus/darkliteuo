@@ -12,7 +12,7 @@ using System.Reflection;
 
 namespace DarkLiteUO
 {
-    public partial class myTabPage : TabPage// : UserControl//
+    public partial class myTabPage : UserControl// : TabPage//
     {
         private Dictionary<String, GameVariable[]> variableCategs;
         private class GameVariable
@@ -141,7 +141,7 @@ namespace DarkLiteUO
                         new GameVariable { name = "CharPosX", node = null },
                         new GameVariable { name = "CharPosY", node = null },
                         new GameVariable { name = "CharPosZ", node = null },
-                        new GameVariable { name = "CursKind", node = null },
+                        new GameVariable { name = "Facet", node = null },
                         new GameVariable { name = "CharDir", node = null },
                         new GameVariable { name = "BackpackID", node = null },
                         new GameVariable { name = "CharID", node = null },
@@ -276,8 +276,8 @@ namespace DarkLiteUO
                         case "CharName":
                             temp = var.name + " = " + Client.Player.Name;
                             break;
-                        case "CursKind":
-                            // temp = var.name + " = " + uonet.player.Facet;
+                        case "Facet":
+                             temp = var.name + " = " + Client.Player.Facet.ToString();
                             break;
                         case "Str":
                             temp = var.name + " = " + Client.Player.Strength;
@@ -371,6 +371,12 @@ namespace DarkLiteUO
             ScriptThread.Start();
 
             //ScriptThread.IsBackground = true;
+        }
+
+        private void btnDisplayGame_Click(object sender, EventArgs e)
+        {
+            GameWindow.GameWindow Gamewindow = new GameWindow.GameWindow(Client);
+            Gamewindow.Show();
         }
 
    

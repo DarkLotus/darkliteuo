@@ -39,6 +39,7 @@
             this.btnSend = new System.Windows.Forms.Button();
             this.updateVarsTimer = new System.Windows.Forms.Timer(this.components);
             this.Close = new System.Windows.Forms.Button();
+            this.btnDisplayGame = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // txtScriptBox
@@ -124,12 +125,23 @@
             this.Close.Name = "Close";
             this.Close.Size = new System.Drawing.Size(75, 23);
             this.Close.TabIndex = 23;
-            this.Close.Text = "btnClosetab";
+            this.Close.Text = "Run built in script";
             this.Close.UseVisualStyleBackColor = true;
             this.Close.Click += new System.EventHandler(this.Close_Click);
             // 
+            // btnDisplayGame
+            // 
+            this.btnDisplayGame.Location = new System.Drawing.Point(84, 3);
+            this.btnDisplayGame.Name = "btnDisplayGame";
+            this.btnDisplayGame.Size = new System.Drawing.Size(75, 23);
+            this.btnDisplayGame.TabIndex = 24;
+            this.btnDisplayGame.Text = "render";
+            this.btnDisplayGame.UseVisualStyleBackColor = true;
+            this.btnDisplayGame.Click += new System.EventHandler(this.btnDisplayGame_Click);
+            // 
             // myTabPage
             // 
+            this.Controls.Add(this.btnDisplayGame);
             this.Controls.Add(this.Close);
             this.Controls.Add(this.txtOutput);
             this.Controls.Add(this.txtScriptBox);
@@ -158,5 +170,6 @@
         private System.Windows.Forms.Button btnSend;
         private System.Windows.Forms.Timer updateVarsTimer;
         private System.Windows.Forms.Button Close;
+        private System.Windows.Forms.Button btnDisplayGame;
     }
 }
