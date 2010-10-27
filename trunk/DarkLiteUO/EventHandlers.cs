@@ -43,7 +43,7 @@ namespace DarkLiteUO
 
         void Client_onMovementBlocked(ref LiteClient Client)
         {
-           // throw new NotImplementedException();
+            UpdateLog("Move Faled");
         }
 
         void Client_onConnectionLoss(ref LiteClient Client)

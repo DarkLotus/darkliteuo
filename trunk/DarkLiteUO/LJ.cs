@@ -1,4 +1,5 @@
-﻿using System;
+﻿#define debug
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading;
@@ -8,6 +9,7 @@ using System.Windows.Forms;
 using UOLite2.SupportClasses;
 using Ultima;
 using System.Drawing;
+
 namespace DarkLiteUO
 {
     public partial class Script : IScriptInterface
@@ -43,31 +45,33 @@ namespace DarkLiteUO
         }
         public void Main()
         {
+            Debug = true;
             GUI.UpdateLog("Script Started");
-            Startloc.X = Client.Player.X;
-            Startloc.Y = Client.Player.Y;
+            Startloc.X = 2632;
+            Startloc.Y = 907;
             AxeType = (ushort)EUOToInt("BSF");
             TreeTiles = new uint[] { 3230, 3274, 3275, 3276, 3277, 3280, 3283, 3286, 3288, 3290, 3293, 3296, 3299, 3302 };
             DropChest = EUOToInt("XXGKKMD");
             
             Range.XRange = new Bound(-20,37);
             Range.YRange = new Bound(-10,30);
-            Pathfind(Convert.ToUInt16(Startloc.X + 25), Convert.ToUInt16(Startloc.Y- 10), 1);
+            Pathfind(2649,912, 0);
 
+            return;
             ChopLoop(); // Chops all the trees withing Range
 
             GUI.UpdateLog("Script Ended");
             return;
 
             Tile mytile = new Tile();
-            TileMatrix tm = new TileMatrix(0, 0, 6144, 4096);
-           HuedTile[][][] mylist = tm.GetStaticBlock(Client.Player.X, Client.Player.Y);
+            //TileMatrix tm = new TileMatrix(0, 0, 6144, 4096);
+          // HuedTile[][][] mylist = tm.GetStaticBlock(Client.Player.X, Client.Player.Y);
 
            // mytile = tm.GetLandTile(X, Y);
 
 
 
-           HuedTile[] mtlist = GetStatics(Client.Player.X,Client.Player.Y);
+          // HuedTile[] mtlist = GetStatics(Client.Player.X,Client.Player.Y);
             //Tile mytile = GetLandTile(Client.Player.X,Client.Player.Y);
             HashSet<Item> Tools;
             Item Tool;
