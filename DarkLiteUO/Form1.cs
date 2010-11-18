@@ -13,42 +13,54 @@ namespace DarkLiteUO
 {
     public partial class Form1 : Form
     {
-
+        Options Optionform;
        // public delegate void Client_onCharacterListReceive(ref UOLite2.LiteClient Client, System.Collections.ArrayList CharacterList);
         
         public Form1()
         {
-
-           
-            InitializeComponent();
-
             
-
-            Profiles Profile = Profiles.Deserialize("config.xml");
-
-            foreach (config config in Profile.Profileslist)
+            
+            InitializeComponent();
+            try
             {
-                cmbProfileList.Items.Add(config);
+                Profiles Profile = Profiles.Deserialize("config.xml");
+                foreach (config config in Profile.Profileslist)
+                {
+                    cmbProfileList.Items.Add(config);
+                }
             }
+            catch { }
+
         
 
 
             
         }
 
+        void Optionform_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            try
+            {
+                Profiles Profile = Profiles.Deserialize("config.xml");
+                foreach (config config in Profile.Profileslist)
+                {
+                    cmbProfileList.Items.Add(config);
+                }
+            }
+            catch { }
+            Optionform.FormClosing -= Optionform_FormClosing;
+        }
        
-
-        
-
-        
 
         private void btnConnect_Click(object sender, EventArgs e)
         {
-            config config = (config)cmbProfileList.SelectedItem;
-            myTabPage page2 = new myTabPage(config);
-            tabMain.TabPages.Add((TabPage)page2);
-
-            
+            try
+            {
+                config config = (config)cmbProfileList.SelectedItem;
+                myTabPage page2 = new myTabPage(config);
+                tabMain.TabPages.Add((TabPage)page2);
+            }
+            catch { }
 
 
         }
@@ -59,13 +71,6 @@ namespace DarkLiteUO
             this.Close();
         }
 
-
-
-
-
-
-
-  
 
         private void btn_clearlog_Click(object sender, EventArgs e)
         {
@@ -92,8 +97,9 @@ namespace DarkLiteUO
 
         private void addAccountToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Options form = new Options(this);
-            form.Show();
+            Optionform = new Options(this);
+            Optionform.Show();
+            Optionform.FormClosing += new FormClosingEventHandler(Optionform_FormClosing);
         }
 
         private void dissconnect_Click(object sender, EventArgs e)

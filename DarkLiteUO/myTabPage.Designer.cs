@@ -31,15 +31,15 @@
             this.components = new System.ComponentModel.Container();
             this.txtScriptBox = new System.Windows.Forms.TextBox();
             this.btn_clearlog = new System.Windows.Forms.Button();
-            this.button1 = new System.Windows.Forms.Button();
+            this.btnRunScript = new System.Windows.Forms.Button();
             this.btn_stopscript = new System.Windows.Forms.Button();
             this.txtOutput = new System.Windows.Forms.TextBox();
             this.vartree = new System.Windows.Forms.TreeView();
             this.tboxSend = new System.Windows.Forms.TextBox();
             this.btnSend = new System.Windows.Forms.Button();
             this.updateVarsTimer = new System.Windows.Forms.Timer(this.components);
-            this.Close = new System.Windows.Forms.Button();
             this.btnDisplayGame = new System.Windows.Forms.Button();
+            this.btnOpenscript = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // txtScriptBox
@@ -61,15 +61,15 @@
             this.btn_clearlog.UseVisualStyleBackColor = true;
             this.btn_clearlog.Click += new System.EventHandler(this.btn_clearlog_Click);
             // 
-            // button1
+            // btnRunScript
             // 
-            this.button1.Location = new System.Drawing.Point(250, 3);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(81, 23);
-            this.button1.TabIndex = 14;
-            this.button1.Text = "Run Script";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.btnRunScript.Location = new System.Drawing.Point(250, 3);
+            this.btnRunScript.Name = "btnRunScript";
+            this.btnRunScript.Size = new System.Drawing.Size(81, 23);
+            this.btnRunScript.TabIndex = 14;
+            this.btnRunScript.Text = "Run Script";
+            this.btnRunScript.UseVisualStyleBackColor = true;
+            this.btnRunScript.Click += new System.EventHandler(this.btnRunScript_Click);
             // 
             // btn_stopscript
             // 
@@ -112,6 +112,7 @@
             this.btnSend.TabIndex = 21;
             this.btnSend.Text = "Send";
             this.btnSend.UseVisualStyleBackColor = true;
+            this.btnSend.Click += new System.EventHandler(this.btnSend_Click);
             // 
             // updateVarsTimer
             // 
@@ -119,35 +120,35 @@
             this.updateVarsTimer.Interval = 1000;
             this.updateVarsTimer.Tick += new System.EventHandler(this.updateVarsTimer_Tick);
             // 
-            // Close
-            // 
-            this.Close.Location = new System.Drawing.Point(3, 3);
-            this.Close.Name = "Close";
-            this.Close.Size = new System.Drawing.Size(75, 23);
-            this.Close.TabIndex = 23;
-            this.Close.Text = "Run built in script";
-            this.Close.UseVisualStyleBackColor = true;
-            this.Close.Click += new System.EventHandler(this.Close_Click);
-            // 
             // btnDisplayGame
             // 
-            this.btnDisplayGame.Location = new System.Drawing.Point(84, 3);
+            this.btnDisplayGame.Location = new System.Drawing.Point(88, 3);
             this.btnDisplayGame.Name = "btnDisplayGame";
             this.btnDisplayGame.Size = new System.Drawing.Size(75, 23);
             this.btnDisplayGame.TabIndex = 24;
-            this.btnDisplayGame.Text = "render";
+            this.btnDisplayGame.Text = "BrokenBtn";
             this.btnDisplayGame.UseVisualStyleBackColor = true;
             this.btnDisplayGame.Click += new System.EventHandler(this.btnDisplayGame_Click);
             // 
+            // btnOpenscript
+            // 
+            this.btnOpenscript.Location = new System.Drawing.Point(7, 3);
+            this.btnOpenscript.Name = "btnOpenscript";
+            this.btnOpenscript.Size = new System.Drawing.Size(75, 23);
+            this.btnOpenscript.TabIndex = 25;
+            this.btnOpenscript.Text = "Open Script";
+            this.btnOpenscript.UseVisualStyleBackColor = true;
+            this.btnOpenscript.Click += new System.EventHandler(this.btnOpenscript_Click);
+            // 
             // myTabPage
             // 
+            this.Controls.Add(this.btnOpenscript);
             this.Controls.Add(this.btnDisplayGame);
-            this.Controls.Add(this.Close);
             this.Controls.Add(this.txtOutput);
             this.Controls.Add(this.txtScriptBox);
             this.Controls.Add(this.btnSend);
             this.Controls.Add(this.btn_clearlog);
-            this.Controls.Add(this.button1);
+            this.Controls.Add(this.btnRunScript);
             this.Controls.Add(this.tboxSend);
             this.Controls.Add(this.btn_stopscript);
             this.Controls.Add(this.vartree);
@@ -162,14 +163,14 @@
 
         private System.Windows.Forms.TextBox txtScriptBox;
         private System.Windows.Forms.Button btn_clearlog;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button btnRunScript;
         private System.Windows.Forms.Button btn_stopscript;
         private System.Windows.Forms.TextBox txtOutput;
         private System.Windows.Forms.TreeView vartree;
         private System.Windows.Forms.TextBox tboxSend;
         private System.Windows.Forms.Button btnSend;
         private System.Windows.Forms.Timer updateVarsTimer;
-        private System.Windows.Forms.Button Close;
         private System.Windows.Forms.Button btnDisplayGame;
+        private System.Windows.Forms.Button btnOpenscript;
     }
 }
