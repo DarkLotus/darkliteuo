@@ -43,13 +43,22 @@ namespace DarkLiteUO
 
         void Client_onMovementBlocked(ref LiteClient Client)
         {
-            UpdateLog("Move Faled");
+            UpdateLog("Move Failed");
         }
 
         void Client_onConnectionLoss(ref LiteClient Client)
         {
-            bConnected = false;
-            UpdateLog("DISSCONNECTED");
+            if (ScriptThread != null)
+            {
+                if (ScriptThread.ThreadState == ThreadState.Running)
+                {
+                    ScriptThread.Suspend();
+                    UpdateLog("Script Thread paused");
+                }
+            }
+            //bConnected = false;
+            UpdateLog("Dissconnected, attempting reconnect.");
+            Connect();
         }
 
         void Client_onSkillUpdate(ref LiteClient Client, ref UOLite2.SupportClasses.Skill OldSkill, ref UOLite2.SupportClasses.Skill NewSkill)
@@ -97,10 +106,6 @@ namespace DarkLiteUO
                 UpdateLog("Login Failed no CHarlist entries");
             }
 
-            //Chooses the first character in the list.
-            // by ref? who needs ref bye bye data
-            
-            //Client.ChooseCharacter(ref ((UOLite2.Structures.CharListEntry)CharacterList[0]).Name, ref txtPassword.Text, ((UOLite2.Structures.CharListEntry)CharacterList[0]).Slot);
         }
 
         private void Client_onPacketSend(ref UOLite2.LiteClient Client, ref Byte[] data)
@@ -117,7 +122,14 @@ namespace DarkLiteUO
         {
             UpdateLog("Login Complete");
             bConnected = true;
-
+            if (ScriptThread != null)
+            {
+            
+                if (ScriptThread.ThreadState == ThreadState.Suspended)
+                {
+                    ScriptThread.Resume();
+                }
+            }
         }
         private void Client_onError(ref String Description)
         {

@@ -10,10 +10,12 @@ using System.Threading;
 using UOLite2;
 using System.Reflection;
 
+
 namespace DarkLiteUO
 {
-    public partial class myTabPage : UserControl// : TabPage//
+    public partial class myTabPage : TabPage// : UserControl//
     {
+        private config _config;
         private Dictionary<String, GameVariable[]> variableCategs;
         private class GameVariable
         {
@@ -32,6 +34,7 @@ namespace DarkLiteUO
         private String _name = "";
         public myTabPage(config config)
         {
+            _config = config;
             _name = config.Username;
             //this.Name = config.Username;
             this.Text = config.Username;
@@ -53,16 +56,22 @@ namespace DarkLiteUO
             Client.onNewMobile += new LiteClient.onNewMobileEventHandler(Client_onNewMobile);
             Client.onPlayerMove += new LiteClient.onPlayerMoveEventHandler(Client_onPlayerMove);
             Client.onTargetRequest += new LiteClient.onTargetRequestEventHandler(Client_onTargetRequest);
+
+            
             InitializeComponent();
             setuptreeview();
-            String status = Client.GetServerList(config.Username, config.Password, config.IP, config.Port); ;
+            Connect();
+            
+        }
+        private void Connect()
+        {
+            String status = Client.GetServerList(_config.Username, _config.Password, _config.IP, _config.Port); ;
             if (status == "SUCCESS")
             {
                 UpdateLog("Connected to server: " + Client.LoginServerAddress + ":" + Client.LoginPort.ToString());
 
             }
             else { UpdateLog(status); }
-            
         }
         public override string ToString()
         {
@@ -70,13 +79,14 @@ namespace DarkLiteUO
         }
         private void btn_clearlog_Click(object sender, EventArgs e)
         {
-            Script myscript = new Script();
-            myscript.Start(ref Client, this);
-            Thread mythread = new Thread(myscript.Main);
-            mythread.Start();
+            //Script myscript = new Script();
+            //myscript.Start(ref Client, this);
+            //Thread mythread = new Thread(myscript.Main);
+            //mythread.Start();
+            txtOutput.Clear();
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void btnRunScript_Click(object sender, EventArgs e)
         {
             if (Client.Connected)
             {
@@ -201,6 +211,7 @@ namespace DarkLiteUO
                     }
                 },
                 {
+                                        
                     "Container Info",
                     new GameVariable[]
                     {
@@ -239,9 +250,39 @@ namespace DarkLiteUO
         private void updateVarsTimer_Tick(object sender, EventArgs e)
         {
             if (!bConnected) { return; }
-            // if (vartree.Focused) return; // make it copy-able
+             if (vartree.Focused) return; // make it copy-able
+           
+            vartree.Nodes.Clear();
+
+            foreach (String categ in variableCategs.Keys)
+            {
+                TreeNode node = vartree.Nodes.Add(categ);
+                foreach (GameVariable var in variableCategs[categ])
+                {
+                    var.node = node.Nodes.Add(var.name);
+                    var.node.Text = var.name + " = ?";
+                }
+            }
+
+            TreeNode ItemsNode = new TreeNode("Items");
+            foreach (Item i in Client.Items.Items)
+            {
+                TreeNode inode = new TreeNode(i.TypeName);
+                inode.Nodes.Add("Serial : " + i.Serial);
+                inode.Nodes.Add("Type: " + i.Type.ToString());
+                inode.Nodes.Add("Hue : " + i.Hue);
+                inode.Nodes.Add("X : " + i.X);
+                inode.Nodes.Add("Y : " + i.Y);
+                inode.Nodes.Add("Container : " + i.Container);
+                ItemsNode.Nodes.Add(inode);
+            }
+            ItemsNode.Name = "Items";
+            ItemsNode.Text = "Items";
+            vartree.Nodes.Add(ItemsNode);
 
             foreach (GameVariable[] vars in variableCategs.Values)
+            {
+                
                 foreach (GameVariable var in vars)
                 {
                     String temp = "";
@@ -259,7 +300,7 @@ namespace DarkLiteUO
                             temp = var.name + " = " + Client.Player.Z;
                             break;
                         case "BackpackID":
-                            // temp = var.name + " = " + uonet.player.BackpackID;
+                            temp = var.name + " = " + Client.Player.Layers.BackPack.Serial.ToString();
                             break;
                         case "CharID":
                             temp = var.name + " = " + Client.Player.Serial;
@@ -277,7 +318,7 @@ namespace DarkLiteUO
                             temp = var.name + " = " + Client.Player.Name;
                             break;
                         case "Facet":
-                             temp = var.name + " = " + Client.Player.Facet.ToString();
+                            temp = var.name + " = " + Client.Player.Facet.ToString();
                             break;
                         case "Str":
                             temp = var.name + " = " + Client.Player.Strength;
@@ -310,17 +351,20 @@ namespace DarkLiteUO
                             //   temp = var.name + " = " + uonet.player.MaxMana;
                             break;
                         case "Weight":
-                            // temp = var.name + " = " + uonet.player.Weight;
+                            temp = var.name + " = " + Client.Player.Weight;
                             break;
                         case "MaxWeight":
-                            //  temp = var.name + " = " + uonet.player.MaxWeight;
+                            temp = var.name + " = " + Client.Player.MaxWeight;
                             break;
                         case "Gold":
-                            //  temp = var.name + " = " + uonet.player.Gold;
+                            temp = var.name + " = " + Client.Player.Gold;
                             break;
 
                     }
                     if ((var.node.Text != temp) && (temp != "")) { var.node.Text = temp; }
+
+
+            
                     /* GameDLL.SetTop(GH, 0);
                      GameDLL.PushStrVal(GH, "GetVar");
                      GameDLL.PushStrVal(GH, var.name);
@@ -345,6 +389,7 @@ namespace DarkLiteUO
                      if (var.node.Text != tmp)
                          var.node.Text = tmp;*/
                 }
+            }
         }
 
         private void setUpVariablesTree()
@@ -361,22 +406,50 @@ namespace DarkLiteUO
                     var.node.Text = var.name + " = ?";
                 }
             }
+            
+
         }
 
-        private void Close_Click(object sender, EventArgs e)
+        private void btnDisplayGame_Click(object sender, EventArgs e)
         {
             Script myscript = new Script();
             myscript.Start(ref Client, this);
             ScriptThread = new Thread(myscript.Main);
             ScriptThread.Start();
-
-            //ScriptThread.IsBackground = true;
+           // GameWindow.XNARender myrender = new GameWindow.XNARender();
+           // Thread mythread = new Thread(myrender.Start);
+           // mythread.Start();
         }
 
-        private void btnDisplayGame_Click(object sender, EventArgs e)
+        private void btnSend_Click(object sender, EventArgs e)
         {
-            GameWindow.GameWindow Gamewindow = new GameWindow.GameWindow(Client);
-            Gamewindow.Show();
+            UOLite2.Enums.Common.Hues myhue = UOLite2.Enums.Common.Hues.Green;
+            UOLite2.Enums.SpeechTypes mysp = UOLite2.Enums.SpeechTypes.Regular;
+            UOLite2.Enums.Fonts font = UOLite2.Enums.Fonts.Default;
+            string text = tboxSend.Text; tboxSend.Clear();
+
+            Client.Speak(ref text, ref myhue, ref mysp, ref font);
+
+        }
+
+        private void btnOpenscript_Click(object sender, EventArgs e)
+        {
+            // Displays an OpenFileDialog so the user can select a Cursor.
+            OpenFileDialog openFileDialog1 = new OpenFileDialog();
+            openFileDialog1.Filter = "*.txt|*.cs";
+            openFileDialog1.Title = "Open Script";
+            openFileDialog1.InitialDirectory = "";
+
+            // Show the Dialog.
+            // If the user clicked OK in the dialog and
+            // a .CUR file was selected, open it.
+            if (openFileDialog1.ShowDialog() == DialogResult.OK)
+            {
+                System.IO.StreamReader sr = new
+                         System.IO.StreamReader(openFileDialog1.FileName);
+                this.txtScriptBox.Text = sr.ReadToEnd();
+                
+            }
         }
 
    

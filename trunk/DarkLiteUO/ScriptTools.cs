@@ -13,41 +13,83 @@ namespace DarkLiteUO
     public partial class Script : IScriptInterface
     {
         Boolean Debug = false;
+        private bool myScriptRunning = true;
         LiteClient Client;
         myTabPage GUI;
-
+        bool moved = false;
         public void Start(ref UOLite2.LiteClient Client, myTabPage GUI)
         {
             this.Client = Client;
             this.GUI = GUI;
         }
-
+        public void Stop()
+        {
+            myScriptRunning = false;
+        }
 
 
         private void Pathfind(ushort X, ushort Y, ushort Accuracy)
         {
+            Point Testingpoint = new Point(Client.Player.X, Client.Player.Y);
             if (Debug) { GUI.UpdateLog("Finding Path to" + X.ToString() + "," + Y.ToString()); }
-            List<Point> Mypath = FindPath(new Point(Client.Player.X,Client.Player.Y), new Point(X, Y));
+            List<Point> Mypath = FindPath(new Point(Client.Player.X,Client.Player.Y), new Point(X, Y),Accuracy);
             // traverse the path here
             if (Debug) { GUI.UpdateLog("Path Found. Path steps= " + Mypath.Count); }
+            UOLite2.Enums.Direction DirRunning;
+            int temp2 = Mypath.Count - Accuracy - 1;
+            for (int i = 0; i <= temp2; i++) // 
+            {
+                if (i == 0)
+                {
+                    DirRunning = GetDirection(Client.Player.X, Client.Player.Y, Convert.ToUInt16(Mypath[i].X), Convert.ToUInt16(Mypath[i].Y));
+                }
+                else
+                {
+                    DirRunning = GetDirection(Convert.ToUInt16(Mypath[i - 1].X), Convert.ToUInt16(Mypath[i - 1].Y), Convert.ToUInt16(Mypath[i].X), Convert.ToUInt16(Mypath[i].Y));
+                }
+                uint steps = 1;
+                Client.Walk(ref DirRunning, ref steps);
+            }
+            System.Diagnostics.Stopwatch timer = new System.Diagnostics.Stopwatch();
+            timer.Start();
+            while (timer.ElapsedMilliseconds <= (Mypath.Count * 200))
+            {
+                if (Accuracy == 0)
+                {
+                    if ((Client.Player.X == X) && (Client.Player.Y == Y))
+                    {
+                        return;
+                    }
+                }
+                else
+                {
+                    if (Get2DDistance(Client.Player.X, Client.Player.Y, X, Y) <= Accuracy) { return; }
+                }
+                
+            }
+            // Ok we failed to reach the path bad
+            return;
+
             int temp = Mypath.Count - Accuracy - 1;
             for (int i = 0; i <= temp; i++) // 
             {
-                    UOLite2.Enums.Direction DirRunning = GetDirection(Client.Player.X, Client.Player.Y, Convert.ToUInt16(Mypath[i].X), Convert.ToUInt16(Mypath[i].Y));
+                    //UOLite2.Enums.Direction DirRunning = GetDirection(Client.Player.X, Client.Player.Y, Convert.ToUInt16(Mypath[i].X), Convert.ToUInt16(Mypath[i].Y));
                     if (i >= 1)
                     {
                         DirRunning = GetDirection(Convert.ToUInt16(Mypath[i - 1].X), Convert.ToUInt16(Mypath[i - 1].Y), Convert.ToUInt16(Mypath[i].X), Convert.ToUInt16(Mypath[i].Y));
                     }
-                    if ((DirRunning != UOLite2.Enums.Direction.None) && ((Client.Player.X == Mypath[i].X) && (Client.Player.Y == Mypath[i].Y)))
+                    if ((DirRunning != UOLite2.Enums.Direction.None) && ((Client.Player.X != Mypath[i].X) || (Client.Player.Y != Mypath[i].Y)))
                     {
 
                 uint steps = 1;
                 int m = (int)DirRunning ^ 0x80;
                 UOLite2.Enums.Direction DirWalking = (UOLite2.Enums.Direction)m;
-                if ((Client.Player.Direction != DirRunning) && (Client.Player.Direction != DirWalking) && ( i == 0)) { steps = 2; }
-                if (Debug) { GUI.UpdateLog("Taking step: " + DirRunning.ToString() + " Objective: " + Mypath[i].X.ToString() + "-" + Mypath[i].Y.ToString()); }
+                //if ((Client.Player.Direction != DirRunning) && (Client.Player.Direction != DirWalking) && ( i == 0)) { steps = 2; }
+               // if (Debug) { GUI.UpdateLog("Taking step: " + DirRunning.ToString() + " Objective: " + Mypath[i].X.ToString() + "-" + Mypath[i].Y.ToString()); }
                 Client.Walk(ref DirRunning, ref steps);
-                for (int t = 0; t < 50; t++)
+                System.Diagnostics.Stopwatch timeout = new System.Diagnostics.Stopwatch();
+                timeout.Start();
+                while ((timeout.ElapsedMilliseconds <= 3000) && (Client.Player.X != Mypath[i].X) && (Client.Player.Y != Mypath[i].Y))
                 {
                     if((Client.Player.X == Mypath[i].X) && (Client.Player.Y == Mypath[i].Y))
                     {
@@ -56,27 +98,29 @@ namespace DarkLiteUO
                     Thread.Sleep(10);
                 }
 
+                // if we are not at the destination after 1 seconds, check if we are somewhere else in the path, if not Find a new path from here to dest
                 if ((Client.Player.X != Mypath[i].X) && (Client.Player.Y != Mypath[i].Y))
                 {
-                    i = -1;
+                    Point playertemp = new Point(Client.Player.X, Client.Player.Y);
+                    if (Mypath.Contains(playertemp))
+                    {
+                        i = Mypath.IndexOf(playertemp) - 1;
+                    }
+                    else // Find a new path were not on the current path
+                    {
+                        if (playertemp != Testingpoint) // make sure were just not at the start point still. If not remake
+                        {
+                            GUI.UpdateLog("Finding new path we are off path");
+                            Mypath = FindPath(playertemp, new Point(X, Y), Accuracy); i = -1; temp = Mypath.Count - Accuracy - 1;
+                        }
+                    }
+                    
                 }
                     }
             }
-           /* foreach (Point p in Mypath)
-            {
-               
-                UOLite2.Enums.Direction DirRunning = GetDirection(Client.Player.X,Client.Player.Y,Convert.ToUInt16(p.X),Convert.ToUInt16(p.Y));
-                uint steps = 1;
-                int m = (int)DirRunning ^ 0x80;
-                UOLite2.Enums.Direction DirWalking = (UOLite2.Enums.Direction)m;
-                //if ((Client.Player.Direction != DirRunning) && (Client.Player.Direction != DirWalking)) { steps = 2; }
-                GUI.UpdateLog("Taking step: " + DirRunning.ToString() + " Objective: " + p.X.ToString() + "-" + p.Y.ToString());
-                Client.Walk(ref DirRunning, ref steps);
-                Thread.Sleep(5);
-                
-            }*/
 
         }
+
 
         public UOLite2.Enums.Direction GetDirection(ushort X1, ushort Y1, ushort X2, ushort Y2)
         {
@@ -118,7 +162,7 @@ namespace DarkLiteUO
                 return UOLite2.Enums.Direction.NorthEastRunning;
             }
         }
-        public List<Point> FindPath(Point start, Point end)
+        public List<Point> FindPath(Point start, Point end, ushort accuracy)
         {
             //List<node> World = FillWorld(new Bound(32, 32), new Bound(32, 32));
             List<node> Neighbours;
@@ -133,7 +177,9 @@ namespace DarkLiteUO
                 node Current = Openlist.First<node>();
                 Openlist.Remove(Current);
                 Closedlist.Add(Current);
-                if ((Current.X == end.X) && (Current.Y == end.Y))
+                
+                //if ((Current.X == end.X) && (Current.Y == end.Y))
+                if (Get2DDistance(Current.X, Current.Y, end.X, end.Y) <= accuracy)
                 {
                     while (Current.Parent != null) {
                     mypath.Insert(0,new Point(Current.X,Current.Y));
@@ -144,7 +190,20 @@ namespace DarkLiteUO
                 }
                 Neighbours = GetNeighbours(Current.X, Current.Y);
                 foreach( node mynode in Neighbours) {
-                    if ((!mynode.Blocked()) && (!Closedlist.Contains(mynode)))
+                     
+                    // Hack for pathfinding to trees. Ignores the last tile being blocked.
+                    
+                    if(accuracy == 1 && ((mynode.X == end.X ) && (mynode.Y == end.Y))) {
+                        node tempnode = mynode;
+                        tempnode.Parent = Current;
+                        tempnode.G = tempnode.G + Current.G;
+                        tempnode.H = 10 * (Math.Abs(tempnode.X - end.X) + Math.Abs(tempnode.Y - end.Y));
+                        tempnode.F = tempnode.G + tempnode.H;
+                        //tempnode.Cost = 10 + (10 * Get2DDistance(tempnode.X,tempnode.Y,end.X,end.Y));
+                        Openlist.Add(tempnode);
+                    }
+
+                    if ((!mynode.Blocked(ref Client)) && (!Closedlist.Contains(mynode)))
                     {
                         if (Openlist.Exists(delegate(node Mynode) { return ((Mynode.X == mynode.X) && (Mynode.Y == mynode.Y)); } ))
                         {
@@ -172,7 +231,7 @@ namespace DarkLiteUO
                         }
 
                         }
-                    else { Closedlist.Add(mynode); } // Maybe this works? we only need x/y in closed list.
+                    else { Closedlist.Add(mynode); }
                 }
                 Openlist.Sort();
                //if (Openlist.Count > 1000) { Openlist.RemoveRange(1000, Openlist.Count - 1001); }
@@ -193,85 +252,48 @@ namespace DarkLiteUO
 
             mynodes.Add(new node(x, y + 1, Ultima.Map.Trammel.Tiles.GetLandTile(x, y + 1).Z, Ultima.Map.Trammel.Tiles.GetLandTile(x, y + 1).ID, normcost)); //south
             mynodes.Add(new node(x, y - 1, Ultima.Map.Trammel.Tiles.GetLandTile(x, y - 1).Z, Ultima.Map.Trammel.Tiles.GetLandTile(x, y - 1).ID, normcost)); //north
-            if ((!mynodes[0].Blocked()) && (!mynodes[3].Blocked()))
+
+            if ((!mynodes[0].Blocked(ref Client)) && (!mynodes[3].Blocked(ref Client)))
             {
                 mynodes.Add(new node(x + 1, y - 1, Ultima.Map.Trammel.Tiles.GetLandTile(x + 1, y - 1).Z, Ultima.Map.Trammel.Tiles.GetLandTile(x + 1, y - 1).ID, diagcost)); // NE
             }
             else
             {
-                mynodes.Add(new node(x + 1, y - 1, Ultima.Map.Trammel.Tiles.GetLandTile(x + 1, y - 1).Z, Ultima.Map.Trammel.Tiles.GetLandTile(x + 1, y - 1).ID, 1000)); // NE
+                //mynodes.Add(new node(x + 1, y - 1, Ultima.Map.Trammel.Tiles.GetLandTile(x + 1, y - 1).Z, Ultima.Map.Trammel.Tiles.GetLandTile(x + 1, y - 1).ID, 1000)); // NE
             }
 
-            if ((!mynodes[1].Blocked()) && (!mynodes[2].Blocked()))
+            if ((!mynodes[1].Blocked(ref Client)) && (!mynodes[2].Blocked(ref Client)))
             {
                 mynodes.Add(new node(x - 1, y + 1, Ultima.Map.Trammel.Tiles.GetLandTile(x - 1, y + 1).Z, Ultima.Map.Trammel.Tiles.GetLandTile(x - 1, y + 1).ID, diagcost)); // SW
             }
             else
             {
-                mynodes.Add(new node(x - 1, y + 1, Ultima.Map.Trammel.Tiles.GetLandTile(x - 1, y + 1).Z, Ultima.Map.Trammel.Tiles.GetLandTile(x - 1, y + 1).ID, 1000)); // SW
+               // mynodes.Add(new node(x - 1, y + 1, Ultima.Map.Trammel.Tiles.GetLandTile(x - 1, y + 1).Z, Ultima.Map.Trammel.Tiles.GetLandTile(x - 1, y + 1).ID, 1000)); // SW
             }
 
-            if ((!mynodes[0].Blocked()) && (!mynodes[2].Blocked()))
+            if ((!mynodes[0].Blocked(ref Client)) && (!mynodes[2].Blocked(ref Client)))
             {
                 mynodes.Add(new node(x + 1, y + 1, Ultima.Map.Trammel.Tiles.GetLandTile(x + 1, y + 1).Z, Ultima.Map.Trammel.Tiles.GetLandTile(x + 1, y + 1).ID, diagcost)); //SE
             }
             else
             {
-                mynodes.Add(new node(x + 1, y + 1, Ultima.Map.Trammel.Tiles.GetLandTile(x + 1, y + 1).Z, Ultima.Map.Trammel.Tiles.GetLandTile(x + 1, y + 1).ID, 1000)); //SE
+               // mynodes.Add(new node(x + 1, y + 1, Ultima.Map.Trammel.Tiles.GetLandTile(x + 1, y + 1).Z, Ultima.Map.Trammel.Tiles.GetLandTile(x + 1, y + 1).ID, 1000)); //SE
             }
 
-            if ((!mynodes[1].Blocked()) && (!mynodes[3].Blocked()))
+            if ((!mynodes[1].Blocked(ref Client)) && (!mynodes[3].Blocked(ref Client)))
             {
                 mynodes.Add(new node(x - 1, y - 1, Ultima.Map.Trammel.Tiles.GetLandTile(x - 1, y - 1).Z, Ultima.Map.Trammel.Tiles.GetLandTile(x - 1, y - 1).ID, diagcost));//NW
             }
             else
             {
-                mynodes.Add(new node(x - 1, y - 1, Ultima.Map.Trammel.Tiles.GetLandTile(x - 1, y - 1).Z, Ultima.Map.Trammel.Tiles.GetLandTile(x - 1, y - 1).ID, 1000));//NW
+               // mynodes.Add(new node(x - 1, y - 1, Ultima.Map.Trammel.Tiles.GetLandTile(x - 1, y - 1).Z, Ultima.Map.Trammel.Tiles.GetLandTile(x - 1, y - 1).ID, 1000));//NW
             }
             return mynodes;
         }
 
-        private int Get2DDistance(int X1, int Y1, int X2, int Y2)
-        {
-            {
-                //Taken from UOLite2
-                //Whichever is greater is the distance.
-                int xdif = Convert.ToInt32(X1) - Convert.ToInt32(X2);
-                int ydif = Convert.ToInt32(Y1) - Convert.ToInt32(Y2);
+        
 
-                if (xdif < 0)
-                    xdif *= -1;
-                if (ydif < 0)
-                    ydif *= -1;
-
-                //Return the largest difference.
-                if (ydif > xdif)
-                {
-                    return ydif;
-                }
-                else
-                {
-                    return xdif;
-                }
-            }
-        }
-
-        public List<node> FillWorld(Bound X, Bound Y)
-        {
-            List<node> mynodes = new List<node>();
-            for (int x = Client.Player.X - X.Lower; x <= (Client.Player.X + X.Upper); x++)
-            {
-                for (int y = Client.Player.Y - Y.Lower; y <= (Client.Player.Y + Y.Upper); y++)
-                {
-
-                    Tile temptile = Ultima.Map.Trammel.Tiles.GetLandTile(x, y);                    
-                    node mynode = new node(x, y, temptile.Z, temptile.ID,10);
-                    mynodes.Add(mynode);
-
-                }
-            }
-            return mynodes;
-        }
+       
         public struct node : IComparable
         {
             public int X;
@@ -298,7 +320,7 @@ namespace DarkLiteUO
             {
                 return TileData.LandTable[ID].Flags;
             }
-            public bool Blocked()
+            public bool Blocked(ref UOLite2.LiteClient Client)
             {
                 HuedTile[] temptiles = Ultima.Map.Trammel.Tiles.GetStaticTiles(X, Y);
                 HuedTile[][][] mm = Ultima.Map.Trammel.Tiles.GetStaticBlock(X, Y);
@@ -309,6 +331,14 @@ namespace DarkLiteUO
                   
                  }
                 if (TileData.LandTable[ID].Flags == TileFlag.Impassable) { return true; }
+                foreach (Item i in Client.Items)
+                {
+                    if ((i.X == X) && (i.Y == Y))
+                    {
+                        if (Ultima.TileData.ItemTable[i.Type].Impassable) { return true; }
+                    }
+                }
+                
                 return false;
             }
             public int CompareTo(object other)
@@ -351,7 +381,30 @@ namespace DarkLiteUO
                 private node.nodeComparer.ComparisonType whichComparison;
                 }
         }
-        
+        private int Get2DDistance(int X1, int Y1, int X2, int Y2)
+        {
+            {
+                //Taken from UOLite2
+                //Whichever is greater is the distance.
+                int xdif = Convert.ToInt32(X1) - Convert.ToInt32(X2);
+                int ydif = Convert.ToInt32(Y1) - Convert.ToInt32(Y2);
+
+                if (xdif < 0)
+                    xdif *= -1;
+                if (ydif < 0)
+                    ydif *= -1;
+
+                //Return the largest difference.
+                if (ydif > xdif)
+                {
+                    return ydif;
+                }
+                else
+                {
+                    return xdif;
+                }
+            }
+        }
       
         public uint EUOToInt(String val)
         //Code by BtbN
@@ -366,6 +419,20 @@ namespace DarkLiteUO
             num = (num - 7) ^ 0x45;
 
             return num;
+        }
+        public ushort EUOToUshort(String val)
+        //Code by BtbN
+        {
+            val = val.ToUpper(); // Important!
+
+            uint num = 0;
+
+            for (int p = val.Length - 1; p >= 0; p--)
+                num = num * 26 + (((uint)val[p]) - 65);
+
+            num = (num - 7) ^ 0x45;
+
+            return (ushort)num;
         }
         public String IntToEUO(int num)
         //Code by BtbN

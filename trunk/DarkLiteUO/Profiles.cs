@@ -31,6 +31,10 @@ namespace DarkLiteUO
 
         public static void Serialize(string file, Profiles c)
         {
+            if (!File.Exists(file))
+            {
+               // File.Create(file);
+            }
             System.Xml.Serialization.XmlSerializer xs
                = new System.Xml.Serialization.XmlSerializer(c.GetType());
             StreamWriter writer = File.CreateText(file);
