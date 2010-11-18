@@ -23,7 +23,7 @@ namespace DarkLiteUO
             public TreeNode node;
         }
         public UOLite2.Item Item;
-        public UOLite2.LiteClient Client = new UOLite2.LiteClient(Application.StartupPath);
+        public UOLite2.LiteClient Client = new UOLite2.LiteClient(Ultima.Files.Directory);
         private UOLite2.Serial _Player = new UOLite2.Serial(0);
         private UOLite2.Mobile _Mount = null;
         private bool bConnected = false;
