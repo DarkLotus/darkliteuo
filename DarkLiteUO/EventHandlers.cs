@@ -98,7 +98,7 @@ namespace DarkLiteUO
             UpdateLog("CharList Received");
             try
             {
-                UOLite2.Structures.CharListEntry temp = (UOLite2.Structures.CharListEntry)CharacterList[0];
+                UOLite2.Structures.CharListEntry temp = (UOLite2.Structures.CharListEntry)CharacterList[_config.CharSlot -1];
                 Client.ChooseCharacter(ref temp.Name, ref temp.Password, temp.Slot);
             }
             catch
