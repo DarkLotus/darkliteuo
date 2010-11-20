@@ -27,7 +27,14 @@ namespace DarkLiteUO
             myScriptRunning = false;
         }
 
-
+        private void Speak(String text)
+        {
+            UOLite2.Enums.Common.Hues myhue = UOLite2.Enums.Common.Hues.Blue;
+            UOLite2.Enums.SpeechTypes myspeech = UOLite2.Enums.SpeechTypes.Regular;
+            UOLite2.Enums.Fonts myfont = UOLite2.Enums.Fonts.Default;
+            string mymsg = text;
+            Client.Speak(ref mymsg, ref myhue, ref myspeech, ref myfont);
+        }
         private void Pathfind(ushort X, ushort Y, ushort Accuracy)
         {
             Point Testingpoint = new Point(Client.Player.X, Client.Player.Y);

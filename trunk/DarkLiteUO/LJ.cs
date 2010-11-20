@@ -1,4 +1,4 @@
-﻿#define debug
+﻿/*#define debug
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -46,6 +46,7 @@ namespace DarkLiteUO
         }
         public void Main()
         {
+            
             Debug = true;
             GUI.UpdateLog("Script Started");
             Client.Player.DoubleClick(); // Open paperdoll
@@ -207,4 +208,4 @@ namespace DarkLiteUO
 
        
     }
-}
+}*/

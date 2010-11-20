@@ -1,4 +1,53 @@
-﻿
+﻿using System.Linq;
+using UOLite2;
+using System.Windows.Forms;
+using UOLite2.SupportClasses;
+using Ultima;
+using System.Drawing;
+using System.Collections.Generic;
+using System.Threading;
+
+namespace DarkLiteUO
+{
+    public partial class Script : IScriptInterface
+    {
+        Serial Runebookserial;
+        ushort gatetype;
+
+        public void Main()
+        {
+            GUI.UpdateLog("Script Started");
+            Runebookserial = new Serial(EUOToInt("LLMBNMD"));// Set our runebooks ID, using an EUO ID.
+            gatetype = (ushort)EUOToInt("OTF");// set to type of gate
+            string mymsg = "Gate!";
+            bool docast = true;
+            while (myScriptRunning)
+            {
+                HashSet<Item> gates = Client.Items.byType(ref gatetype); // get a list of all gates
+                foreach (Item i in gates)
+                {
+                    if ((i.X == Client.Player.X) && (i.Y == Client.Player.Y))
+                    {
+                        docast = false; // if the gates x/y is same as players dont cast.
+                        break;
+                    }
+                    docast = true;
+                }
+
+                if (docast)
+                {
+                    Speak(mymsg);
+                    Client.CastSpell(UOLite2.Enums.Spell.GateTravel);
+                    while (!Client.Targeting) { Thread.Sleep(10); } // wait for the target cursor
+                    Client.Target(Runebookserial);
+                    Thread.Sleep(5000);
+                }
+            }
+
+        }
+    }
+}
+
 /*using System;
 using System.Collections.Generic;
 using System.Text;
