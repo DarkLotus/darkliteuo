@@ -9,8 +9,7 @@ using Ultima;
 using System.Drawing;
 namespace DarkLiteUO
 {
-   
-    public partial class Script : IScriptInterface
+      public partial class Script : IScriptInterface
     {
         Boolean Debug = false;
         private bool myScriptRunning = true;
@@ -37,7 +36,23 @@ namespace DarkLiteUO
         }
         private void Pathfind(ushort X, ushort Y, ushort Accuracy)
         {
-            Point Testingpoint = new Point(Client.Player.X, Client.Player.Y);
+            System.Diagnostics.Stopwatch timer = new System.Diagnostics.Stopwatch();
+            while (Get2DDistance(Client.Player.X, Client.Player.Y, X, Y) > Accuracy)
+            {
+                GUI.UpdateLog("Distance to target: " + Get2DDistance(Client.Player.X, Client.Player.Y, X, Y).ToString());
+                List<Point> Mypath = FindPath(new Point(Client.Player.X, Client.Player.Y), new Point(X, Y), Accuracy);
+                UOLite2.Enums.Direction DirRunning;
+                DirRunning = GetDirection(Client.Player.X, Client.Player.Y, Convert.ToUInt16(Mypath[0].X), Convert.ToUInt16(Mypath[0].Y));
+                uint steps = 1;
+                Client.Walk(ref DirRunning,ref steps);
+                timer.Restart();
+                while (timer.ElapsedMilliseconds < 200)
+                {
+                    Thread.Sleep(5);
+                }
+            }
+
+            /*Point Testingpoint = new Point(Client.Player.X, Client.Player.Y);
             if (Debug) { GUI.UpdateLog("Finding Path to" + X.ToString() + "," + Y.ToString()); }
             List<Point> Mypath = FindPath(new Point(Client.Player.X,Client.Player.Y), new Point(X, Y),Accuracy);
             // traverse the path here
@@ -125,8 +140,10 @@ namespace DarkLiteUO
                 }
                     }
             }
-
+            */
         }
+
+ 
 
 
         public UOLite2.Enums.Direction GetDirection(ushort X1, ushort Y1, ushort X2, ushort Y2)
@@ -170,7 +187,7 @@ namespace DarkLiteUO
             }
         }
 
-        public static Map Getmap(LiteClient Client)
+        public Map Getmap(LiteClient Client)
         {
             Map mymap;
             switch (Client.Player.Facet)
@@ -363,8 +380,8 @@ namespace DarkLiteUO
             }
             public bool Blocked(ref UOLite2.LiteClient Client)
             {
-                
-                HuedTile[] temptiles = Script.Getmap(Client).Tiles.GetStaticTiles(X, Y);
+
+                HuedTile[] temptiles = Getmap(ref Client).Tiles.GetStaticTiles(X, Y);
                 //HuedTile[][][] mm = Ultima.Map.Trammel.Tiles.GetStaticBlock(X, Y);
 
                 foreach (HuedTile p in temptiles)
@@ -382,6 +399,36 @@ namespace DarkLiteUO
                 }
                 
                 return false;
+            }
+            public Map Getmap(ref LiteClient Client)
+            {
+                Map mymap;
+                switch (Client.Player.Facet)
+                {
+                    case UOLite2.Enums.Facets.Felucca:
+                        mymap = Map.Felucca;
+                        break;
+                    case UOLite2.Enums.Facets.Trammel:
+                        mymap = Map.Trammel;
+                        break;
+                    case UOLite2.Enums.Facets.Ilshenar:
+                        mymap = Map.Ilshenar;
+                        break;
+                    case UOLite2.Enums.Facets.Malas:
+                        mymap = Map.Malas;
+                        break;
+                    case UOLite2.Enums.Facets.Tokuno:
+                        mymap = Map.Tokuno;
+                        break;
+                    case UOLite2.Enums.Facets.Termur:
+                        mymap = Map.TerMur;
+                        break;
+
+                    default:
+                        mymap = Map.Felucca;
+                        break;
+                }
+                return mymap;
             }
             public int CompareTo(object other)
             {
