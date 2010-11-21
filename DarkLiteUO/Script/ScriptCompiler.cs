@@ -202,6 +202,10 @@ namespace DarkLiteUO
             myWaitThread = new Thread(new ThreadStart(WaitForStop));
             Environment.CurrentDirectory = exePath.Substring(0, exePath.LastIndexOf(@"\"));
             CodeDomProvider cdp = CodeDomProvider.CreateProvider("C#");
+            if(sourcecode.Contains("Imports"))
+            {
+                cdp = CodeDomProvider.CreateProvider("VB");
+            }
             CompilerParameters cp = new CompilerParameters();
             cp.ReferencedAssemblies.Add(exePath);
             AddReferences(sourcecode, cp);
@@ -333,8 +337,8 @@ namespace DarkLiteUO
             myHashTable.Add("System.ServiceProcess.Design", new string[] { "System.ServiceProcess.dll", "System.Design.dll" });
             //myHashTable.Add("System.Text", new string[] { });
             //myHashTable.Add("System.Text.RegularExpressions", new string[] { });
-            //myHashTable.Add("System.Threading", new string[] { });
-            //myHashTable.Add("System.Timers", new string[] { });
+            myHashTable.Add("System.Threading", new string[] { });
+            myHashTable.Add("System.Timers", new string[] { });
             myHashTable.Add("System.Web", new string[] { "System.Web.dll" });
             myHashTable.Add("System.Web.Caching", new string[] { "System.Web.dll" });
             myHashTable.Add("System.Web.Configuration", new string[] { "System.Web.dll" });
@@ -365,6 +369,7 @@ namespace DarkLiteUO
             myHashTable.Add("System.Xml.XPath", new string[] { "System.XML.dll" });
             myHashTable.Add("System.Xml.Xsl", new string[] { "System.XML.dll" });
             myHashTable.Add("System.Xml.Linq", new string[] { "System.XML.dll" });
+            myHashTable.Add("Ultima", new string[] { "Ultima.dll" });
             myHashTable.Add("UOLite2", new string[] { "UOLite2.dll" });
 
         }
