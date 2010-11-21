@@ -1,12 +1,12 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Threading;
+using System.Linq;
 using UOLite2;
 using System.Windows.Forms;
 using UOLite2.SupportClasses;
 using Ultima;
-using System.Drawing;
-using System.Collections.Generic;
-using System.Threading;
-
 namespace DarkLiteUO
 {
     public partial class Script : IScriptInterface
@@ -16,8 +16,9 @@ namespace DarkLiteUO
 
         public void Main()
         {
-            Client.onNewGump += new LiteClient.onNewGumpEventHandler(Client_onNewGump);
             GUI.UpdateLog("Script Started");
+            //Pathfind();
+        
             Runebookserial = new Serial(EUOToInt("LLMBNMD"));// Set our runebooks ID, using an EUO ID.
             gatetype = (ushort)EUOToInt("OTF");// set to type of gate
             string mymsg = "Gate!";
@@ -47,13 +48,7 @@ namespace DarkLiteUO
 
         }
 
-        void Client_onNewGump(ref LiteClient Client, ref Gump Gump)
-        {
-            UOLite2.SupportClasses.Gump mygump = Gump;
-
-            UOLite2.Packets.Packet gp = new UOLite2.Packets.GumpResponse(mygump.Serial, mygump.GumpID, 17);
-            Client.Send(ref gp);
-        }
+        
     }
 }
 

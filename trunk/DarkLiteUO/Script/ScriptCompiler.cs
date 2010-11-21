@@ -194,7 +194,7 @@ namespace DarkLiteUO
 
         public static bool Compile(string exePath, string sourcecode)
         {
-           
+
             myScriptInterface = null;
             myScriptAssembly = null;
 
@@ -202,10 +202,6 @@ namespace DarkLiteUO
             myWaitThread = new Thread(new ThreadStart(WaitForStop));
             Environment.CurrentDirectory = exePath.Substring(0, exePath.LastIndexOf(@"\"));
             CodeDomProvider cdp = CodeDomProvider.CreateProvider("C#");
-            if(sourcecode.Contains("Imports"))
-            {
-                cdp = CodeDomProvider.CreateProvider("VB");
-            }
             CompilerParameters cp = new CompilerParameters();
             cp.ReferencedAssemblies.Add(exePath);
             AddReferences(sourcecode, cp);
@@ -368,7 +364,8 @@ namespace DarkLiteUO
             myHashTable.Add("System.Xml.Serialization", new string[] { "System.XML.dll" });
             myHashTable.Add("System.Xml.XPath", new string[] { "System.XML.dll" });
             myHashTable.Add("System.Xml.Xsl", new string[] { "System.XML.dll" });
-            myHashTable.Add("System.Xml.Linq", new string[] { "System.XML.dll" });
+            //myHashTable.Add("System.Xml.Linq", new string[] { "System.XML.dll" });
+            myHashTable.Add("System.Linq", new string[] { "System.Core.dll" });
             myHashTable.Add("Ultima", new string[] { "Ultima.dll" });
             myHashTable.Add("UOLite2", new string[] { "UOLite2.dll" });
 
