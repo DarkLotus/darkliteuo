@@ -37,6 +37,7 @@ namespace DarkLiteUO
 
         void Client_onNewGump(ref LiteClient Client, ref UOLite2.SupportClasses.Gump Gump)
         {
+            
             UpdateLog("GUMP OUTPUT GumpID = " + Gump.GumpID.ToString() + " Gump Serial: " + Gump.Serial.ToString());
            // throw new NotImplementedException();
         }

@@ -16,6 +16,7 @@ namespace DarkLiteUO
 
         public void Main()
         {
+            Client.onNewGump += new LiteClient.onNewGumpEventHandler(Client_onNewGump);
             GUI.UpdateLog("Script Started");
             Runebookserial = new Serial(EUOToInt("LLMBNMD"));// Set our runebooks ID, using an EUO ID.
             gatetype = (ushort)EUOToInt("OTF");// set to type of gate
@@ -44,6 +45,14 @@ namespace DarkLiteUO
                 }
             }
 
+        }
+
+        void Client_onNewGump(ref LiteClient Client, ref Gump Gump)
+        {
+            UOLite2.SupportClasses.Gump mygump = Gump;
+
+            UOLite2.Packets.Packet gp = new UOLite2.Packets.GumpResponse(mygump.Serial, mygump.GumpID, 17);
+            Client.Send(ref gp);
         }
     }
 }

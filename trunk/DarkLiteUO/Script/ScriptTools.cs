@@ -169,14 +169,48 @@ namespace DarkLiteUO
                 return UOLite2.Enums.Direction.NorthEastRunning;
             }
         }
+
+        public static Map Getmap(LiteClient Client)
+        {
+            Map mymap;
+            switch (Client.Player.Facet)
+            {
+                case UOLite2.Enums.Facets.Felucca:
+                    mymap = Map.Felucca;
+                    break;
+                case UOLite2.Enums.Facets.Trammel:
+                    mymap = Map.Trammel;
+                    break;
+                case UOLite2.Enums.Facets.Ilshenar:
+                    mymap = Map.Ilshenar;
+                    break;
+                case UOLite2.Enums.Facets.Malas:
+                    mymap = Map.Malas;
+                    break;
+                case UOLite2.Enums.Facets.Tokuno:
+                    mymap = Map.Tokuno;
+                    break;
+                case UOLite2.Enums.Facets.Termur:
+                    mymap = Map.TerMur;
+                    break;
+
+                default:
+                    mymap = Map.Felucca;
+                    break;
+            }
+            return mymap;
+        }
         public List<Point> FindPath(Point start, Point end, ushort accuracy)
         {
             //List<node> World = FillWorld(new Bound(32, 32), new Bound(32, 32));
+            Map mymap = Getmap(Client);
+           
             List<node> Neighbours;
             List<Point> mypath = new List<Point>();
             List<node> Openlist = new List<node>();
             List<node> Closedlist = new List<node>();
-            Openlist.Add(new node(Client.Player.X,Client.Player.Y, Map.Trammel.Tiles.GetLandTile(Client.Player.X,Client.Player.Y).Z, Map.Trammel.Tiles.GetLandTile(Client.Player.X,Client.Player.Y).ID,0));
+            Openlist.Add(new node(Client.Player.X, Client.Player.Y, mymap.Tiles.GetLandTile(Client.Player.X, Client.Player.Y).Z, mymap.Tiles.GetLandTile(Client.Player.X, Client.Player.Y).ID, 0));
+            Openlist.Add(new node(Client.Player.X, Client.Player.Y, mymap.Tiles.GetLandTile(Client.Player.X, Client.Player.Y).Z, mymap.Tiles.GetLandTile(Client.Player.X, Client.Player.Y).ID, 0));
             
             while (Openlist.Count > 0)
             {
@@ -195,7 +229,7 @@ namespace DarkLiteUO
                     return mypath;
  
                 }
-                Neighbours = GetNeighbours(Current.X, Current.Y);
+                Neighbours = GetNeighbours(Current.X, Current.Y, ref mymap);
                 foreach( node mynode in Neighbours) {
                      
                     // Hack for pathfinding to trees. Ignores the last tile being blocked.
@@ -249,20 +283,20 @@ namespace DarkLiteUO
         }
 
 
-        private List<node> GetNeighbours(int x, int y)
+        private List<node> GetNeighbours(int x, int y, ref Map mymap)
         {
             List<node> mynodes = new List<node>(8);
             int diagcost = 14;
             int normcost = 10;
-            mynodes.Add(new node(x + 1, y, Ultima.Map.Trammel.Tiles.GetLandTile(x + 1, y).Z, Ultima.Map.Trammel.Tiles.GetLandTile(x + 1, y).ID,normcost)); // east
-            mynodes.Add(new node(x - 1, y, Ultima.Map.Trammel.Tiles.GetLandTile(x - 1, y).Z, Ultima.Map.Trammel.Tiles.GetLandTile(x - 1, y).ID, normcost)); // west
+            mynodes.Add(new node(x + 1, y, mymap.Tiles.GetLandTile(x + 1, y).Z, mymap.Tiles.GetLandTile(x + 1, y).ID, normcost)); // east
+            mynodes.Add(new node(x - 1, y, mymap.Tiles.GetLandTile(x - 1, y).Z, mymap.Tiles.GetLandTile(x - 1, y).ID, normcost)); // west
 
-            mynodes.Add(new node(x, y + 1, Ultima.Map.Trammel.Tiles.GetLandTile(x, y + 1).Z, Ultima.Map.Trammel.Tiles.GetLandTile(x, y + 1).ID, normcost)); //south
-            mynodes.Add(new node(x, y - 1, Ultima.Map.Trammel.Tiles.GetLandTile(x, y - 1).Z, Ultima.Map.Trammel.Tiles.GetLandTile(x, y - 1).ID, normcost)); //north
+            mynodes.Add(new node(x, y + 1, mymap.Tiles.GetLandTile(x, y + 1).Z, mymap.Tiles.GetLandTile(x, y + 1).ID, normcost)); //south
+            mynodes.Add(new node(x, y - 1, mymap.Tiles.GetLandTile(x, y - 1).Z, mymap.Tiles.GetLandTile(x, y - 1).ID, normcost)); //north
 
             if ((!mynodes[0].Blocked(ref Client)) && (!mynodes[3].Blocked(ref Client)))
             {
-                mynodes.Add(new node(x + 1, y - 1, Ultima.Map.Trammel.Tiles.GetLandTile(x + 1, y - 1).Z, Ultima.Map.Trammel.Tiles.GetLandTile(x + 1, y - 1).ID, diagcost)); // NE
+                mynodes.Add(new node(x + 1, y - 1, mymap.Tiles.GetLandTile(x + 1, y - 1).Z, mymap.Tiles.GetLandTile(x + 1, y - 1).ID, diagcost)); // NE
             }
             else
             {
@@ -271,7 +305,7 @@ namespace DarkLiteUO
 
             if ((!mynodes[1].Blocked(ref Client)) && (!mynodes[2].Blocked(ref Client)))
             {
-                mynodes.Add(new node(x - 1, y + 1, Ultima.Map.Trammel.Tiles.GetLandTile(x - 1, y + 1).Z, Ultima.Map.Trammel.Tiles.GetLandTile(x - 1, y + 1).ID, diagcost)); // SW
+                mynodes.Add(new node(x - 1, y + 1, mymap.Tiles.GetLandTile(x - 1, y + 1).Z, mymap.Tiles.GetLandTile(x - 1, y + 1).ID, diagcost)); // SW
             }
             else
             {
@@ -280,7 +314,7 @@ namespace DarkLiteUO
 
             if ((!mynodes[0].Blocked(ref Client)) && (!mynodes[2].Blocked(ref Client)))
             {
-                mynodes.Add(new node(x + 1, y + 1, Ultima.Map.Trammel.Tiles.GetLandTile(x + 1, y + 1).Z, Ultima.Map.Trammel.Tiles.GetLandTile(x + 1, y + 1).ID, diagcost)); //SE
+                mynodes.Add(new node(x + 1, y + 1, mymap.Tiles.GetLandTile(x + 1, y + 1).Z, mymap.Tiles.GetLandTile(x + 1, y + 1).ID, diagcost)); //SE
             }
             else
             {
@@ -289,7 +323,7 @@ namespace DarkLiteUO
 
             if ((!mynodes[1].Blocked(ref Client)) && (!mynodes[3].Blocked(ref Client)))
             {
-                mynodes.Add(new node(x - 1, y - 1, Ultima.Map.Trammel.Tiles.GetLandTile(x - 1, y - 1).Z, Ultima.Map.Trammel.Tiles.GetLandTile(x - 1, y - 1).ID, diagcost));//NW
+                mynodes.Add(new node(x - 1, y - 1, mymap.Tiles.GetLandTile(x - 1, y - 1).Z, mymap.Tiles.GetLandTile(x - 1, y - 1).ID, diagcost));//NW
             }
             else
             {
@@ -329,8 +363,9 @@ namespace DarkLiteUO
             }
             public bool Blocked(ref UOLite2.LiteClient Client)
             {
-                HuedTile[] temptiles = Ultima.Map.Trammel.Tiles.GetStaticTiles(X, Y);
-                HuedTile[][][] mm = Ultima.Map.Trammel.Tiles.GetStaticBlock(X, Y);
+                
+                HuedTile[] temptiles = Script.Getmap(Client).Tiles.GetStaticTiles(X, Y);
+                //HuedTile[][][] mm = Ultima.Map.Trammel.Tiles.GetStaticBlock(X, Y);
 
                 foreach (HuedTile p in temptiles)
                 {
