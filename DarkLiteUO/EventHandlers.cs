@@ -38,7 +38,7 @@ namespace DarkLiteUO
         void Client_onNewGump(ref LiteClient Client, ref UOLite2.SupportClasses.Gump Gump)
         {
             
-            UpdateLog("GUMP OUTPUT GumpID = " + Gump.GumpID.ToString() + " Gump Serial: " + Gump.Serial.ToString());
+           // UpdateLog("GUMP OUTPUT GumpID = " + Gump.GumpID.ToString() + " Gump Serial: " + Gump.Serial.ToString());
            // throw new NotImplementedException();
         }
 
@@ -104,7 +104,7 @@ namespace DarkLiteUO
             }
             catch
             {
-                UpdateLog("Login Failed no CHarlist entries");
+                UpdateLog("Login Failed no Charlist entries");
             }
 
         }

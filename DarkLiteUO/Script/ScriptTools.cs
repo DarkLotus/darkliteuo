@@ -9,14 +9,35 @@ using Ultima;
 using System.Drawing;
 namespace DarkLiteUO
 {
-      public partial class Script : IScriptInterface
+
+    public class ScriptTools
+    {
+        public LiteClient Client;
+        public myTabPage GUI;
+        public _ScriptTools Tools;
+        
+
+        public ScriptTools(ref LiteClient _client, myTabPage _gui)
+        {
+            this.Client = _client;
+            this.GUI = _gui;
+            this.Tools = new _ScriptTools(ref Client, GUI);
+        }
+
+        public void Pathfind(ushort p, ushort p_2, ushort p_3)
+        {
+            Tools.Pathfind(p, p_2, p_3);
+        }
+    }
+      public class _ScriptTools
     {
         Boolean Debug = false;
         private bool myScriptRunning = true;
         LiteClient Client;
         myTabPage GUI;
         bool moved = false;
-        public void Start(ref UOLite2.LiteClient Client, myTabPage GUI)
+
+        public _ScriptTools(ref LiteClient Client, myTabPage GUI)
         {
             this.Client = Client;
             this.GUI = GUI;
@@ -26,7 +47,7 @@ namespace DarkLiteUO
             myScriptRunning = false;
         }
 
-        private void Speak(String text)
+        public void Speak(String text)
         {
             UOLite2.Enums.Common.Hues myhue = UOLite2.Enums.Common.Hues.Blue;
             UOLite2.Enums.SpeechTypes myspeech = UOLite2.Enums.SpeechTypes.Regular;
@@ -34,7 +55,7 @@ namespace DarkLiteUO
             string mymsg = text;
             Client.Speak(ref mymsg, ref myhue, ref myspeech, ref myfont);
         }
-        private void Pathfind(ushort X, ushort Y, ushort Accuracy)
+        public void Pathfind(ushort X, ushort Y, ushort Accuracy)
         {
             System.Diagnostics.Stopwatch timer = new System.Diagnostics.Stopwatch();
             while (Get2DDistance(Client.Player.X, Client.Player.Y, X, Y) > Accuracy)
@@ -46,7 +67,7 @@ namespace DarkLiteUO
                 uint steps = 1;
                 Client.Walk(ref DirRunning,ref steps);
                 timer.Restart();
-                while (timer.ElapsedMilliseconds < 200)
+                while (timer.ElapsedMilliseconds < 500)
                 {
                     Thread.Sleep(5);
                 }
@@ -143,7 +164,7 @@ namespace DarkLiteUO
             */
         }
 
- 
+
 
 
         public UOLite2.Enums.Direction GetDirection(ushort X1, ushort Y1, ushort X2, ushort Y2)
@@ -217,7 +238,7 @@ namespace DarkLiteUO
             }
             return mymap;
         }
-        public List<Point> FindPath(Point start, Point end, ushort accuracy)
+        private List<Point> FindPath(Point start, Point end, ushort accuracy)
         {
             //List<node> World = FillWorld(new Bound(32, 32), new Bound(32, 32));
             Map mymap = Getmap(Client);
@@ -352,7 +373,7 @@ namespace DarkLiteUO
         
 
        
-        public struct node : IComparable
+        private struct node : IComparable
         {
             public int X;
             public int Y;
@@ -470,7 +491,7 @@ namespace DarkLiteUO
                 private node.nodeComparer.ComparisonType whichComparison;
                 }
         }
-        private int Get2DDistance(int X1, int Y1, int X2, int Y2)
+        public int Get2DDistance(int X1, int Y1, int X2, int Y2)
         {
             {
                 //Taken from UOLite2
@@ -603,7 +624,9 @@ namespace DarkLiteUO
                 (byte)(value >> 8),
                 (byte)value};
 
-        } 
+        }
+
+
     }
                
     

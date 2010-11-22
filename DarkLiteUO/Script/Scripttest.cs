@@ -9,7 +9,25 @@ using UOLite2.SupportClasses;
 using Ultima;
 namespace DarkLiteUO
 {
-    public partial class Script : IScriptInterface
+    public class Script : IScriptInterface
+    {
+        ScriptTools Tools;
+      
+        public void Main()
+        {
+            Tools.Tools.Pathfind(2634,917,0);
+        }
+        public void Start(ref ScriptTools ST)
+        {
+            this.Tools = ST;
+        }
+        public void Stop()
+        {
+
+        }
+    }
+}
+/*    public partial class Script : IScriptInterface
     {
         Serial Runebookserial;
         ushort gatetype;
@@ -52,7 +70,7 @@ namespace DarkLiteUO
     }
 }
 
-/*using System;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading;
