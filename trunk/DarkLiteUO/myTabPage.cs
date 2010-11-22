@@ -79,10 +79,7 @@ namespace DarkLiteUO
         }
         private void btn_clearlog_Click(object sender, EventArgs e)
         {
-            //Script myscript = new Script();
-            //myscript.Start(ref Client, this);
-            //Thread mythread = new Thread(myscript.Main);
-            //mythread.Start();
+
             txtOutput.Clear();
         }
 
@@ -107,7 +104,10 @@ namespace DarkLiteUO
         private void btn_stopscript_Click(object sender, EventArgs e)
         {
             ScriptCompiler.StopScript();
-            if (ScriptThread.IsAlive) { ScriptThread.Abort(); }
+            if(ScriptThread != null)
+            {
+                if (ScriptThread.IsAlive) { ScriptThread.Abort(); }
+            }
 
         }
         public void UpdateLog(String text)
@@ -413,9 +413,10 @@ namespace DarkLiteUO
         private void btnDisplayGame_Click(object sender, EventArgs e)
         {
             Script myscript = new Script();
-            myscript.Start(ref Client, this);
-            ScriptThread = new Thread(myscript.Main);
-            ScriptThread.Start();
+            ScriptTools ST = new ScriptTools(ref Client, this);
+            myscript.Start(ref ST);
+            Thread mythread = new Thread(myscript.Main);
+            mythread.Start();
            // GameWindow.XNARender myrender = new GameWindow.XNARender();
            // Thread mythread = new Thread(myrender.Start);
            // mythread.Start();

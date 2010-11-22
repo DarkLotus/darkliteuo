@@ -32,8 +32,9 @@ namespace DarkLiteUO
 {
     public interface IScriptInterface
     {
-        void Start(ref UOLite2.LiteClient Client, myTabPage GUI);
+        void Start(ref ScriptTools ST);
         void Stop();
+        void Main();
     }
     internal static class ScriptCompiler
     {
@@ -46,12 +47,11 @@ namespace DarkLiteUO
         private static IScriptInterface myScriptInterface;
         private static Assembly myScriptAssembly;
         private static int myScriptTimeout = 10;
-        private static UOLite2.LiteClient Client;
-        private static myTabPage GUI;
+        private static ScriptTools _ST;
+
         public static void Initialize(int stopScriptTimeout, ref UOLite2.LiteClient _client, myTabPage _gui)
         {
-            Client = _client;
-            GUI = _gui;
+            _ST = new ScriptTools(ref _client, _gui);
             myScriptTimeout = stopScriptTimeout;
         }
 
@@ -123,7 +123,7 @@ namespace DarkLiteUO
         {
             if (myScriptInterface != null)
             {
-                try { myScriptInterface.Start(ref Client, GUI); }
+                try { myScriptInterface.Start(ref _ST); myScriptInterface.Main(); }
                 catch (Exception e)
                 {
                     if (e.InnerException != null) PreserveStackTrace(e.InnerException);
