@@ -79,7 +79,8 @@ Public Class Mobile
     Friend _MaximumHitPointsIncrease As Short = 1
     Friend _MaximumStaminaIncrease As Short = 1
     Friend _MaximumManaIncrease As Short = 1
-    Friend _Facet As Enums.Facets = 1
+    Friend _Facet As UOLite2.Enums.Facets
+
 
 #End Region
 
@@ -1143,12 +1144,11 @@ Public Class Mobile
     Friend Sub HandleDeathPacket(ByVal packet As Packets.DeathAnimation)
         RaiseEvent onDeath(_Client, Me, packet.CorpseSerial)
     End Sub
-
-#End Region
-
     Sub HandleMapChange(ByVal mapChange As Packets.MapChange)
         _Facet = mapChange.Facet
     End Sub
+#End Region
+
 
 End Class
 
