@@ -968,6 +968,7 @@ Namespace Packets
 
     End Class
 
+
     ''' <summary>
     ''' This is sent by the server to equip a single item on a character.
     ''' </summary>
@@ -3142,7 +3143,29 @@ Namespace Packets
 #End Region
 
 #Region "Interface - Targeting, Single/Double Click, Hue Picker, etc..."
+    Public Class MapChange
+        Inherits GenericCommand
 
+        Private _Facet As Enums.Facets
+
+        Friend Sub New(ByVal bytes() As Byte)
+            MyBase.New(UOLite2.Enums.BF_Sub_Commands.MapChange)
+            _Data = bytes
+
+            buff = New UOLite2.SupportClasses.BufferHandler(bytes, True)
+
+            buff.Position = 5
+            _Facet = buff.readbyte
+
+        End Sub
+
+        Public ReadOnly Property Facet() As Enums.Facets
+            Get
+                Return _Facet
+            End Get
+        End Property
+
+    End Class
     Public Class CharacterList
         Inherits Packet
 
@@ -3238,7 +3261,44 @@ Namespace Packets
         End Property
 
     End Class
+    Public Class EquipItemReq
+        Inherits Packet
 
+        Private _Serial As Serial
+        Private _layer As UOLite2.Enums.Layers
+        Private _Container As Serial
+
+        Friend Sub New(ByVal Serial As Serial, ByVal layer As UOLite2.Enums.Layers, ByVal Container As Serial)
+            MyBase.New(UOLite2.Enums.PacketType.EquipItemRequest)
+            Dim bytes(9) As Byte
+            bytes(0) = &H13 'Equip item req
+
+            buff = New UOLite2.SupportClasses.BufferHandler(bytes, True)
+
+            With buff
+                .Position = 1
+                .writeuint(Serial.Value)
+                .writebyte((DirectCast(layer, Byte)))
+                .writeuint(Container.Value)
+
+            End With
+
+        End Sub
+
+
+        Public ReadOnly Property Serial() As Serial
+            Get
+                Return _Serial
+            End Get
+        End Property
+
+
+        Public ReadOnly Property Container() As Serial
+            Get
+                Return _Container
+            End Get
+        End Property
+    End Class
     Public Class DropObject
         Inherits Packet
 
@@ -3526,29 +3586,6 @@ Namespace Packets
         End Property
 
     End Class
-    Public Class MapChange
-        Inherits GenericCommand
-
-        Private _Facet As Enums.Facets
-
-        Friend Sub New(ByVal bytes() As Byte)
-            MyBase.New(UOLite2.Enums.BF_Sub_Commands.MapChange)
-            _Data = bytes
-
-            buff = New UOLite2.SupportClasses.BufferHandler(bytes, True)
-
-            buff.Position = 5
-            _Facet = buff.readbyte
-
-        End Sub
-
-        Public ReadOnly Property Facet() As Enums.Facets
-            Get
-                Return _Facet
-            End Get
-        End Property
-
-    End Class
 
     Public Class ContextMenuResponse
         Inherits GenericCommand
@@ -3813,7 +3850,90 @@ Namespace Packets
         End Property
 
     End Class
+    Public Class GumpResponse
+        Inherits Packet
 
+        Private _Serial As Serial
+        Private _GumpID As UInteger
+        Private _ButtonID As UInteger = 0
+        Private _SwitchCount As UInteger = 0
+        Private _TextCount As UInteger = 0
+        'TODO: Implement Switches and Text. Only null for now.
+
+        'TODO: Add constructor with no buttonid (gump close?)
+        'TODO: Add another constructor for switch/text inclusion
+
+        Public Sub New(ByVal Serial As Serial, ByVal GumpID As UInteger, ByVal ButtonID As UInteger)
+            MyBase.New(Enums.PacketType.GumpResponse)
+            _Serial = Serial
+            _GumpID = GumpID
+            _ButtonID = ButtonID
+
+            Dim bytes(22) As Byte
+            bytes(0) = 177  '0xB1 Gump Response Command
+            bytes(1) = 0
+            bytes(2) = 23   'Packet Size **will change with switch/text inclusion
+
+            buff = New UOLite2.SupportClasses.BufferHandler(bytes, True)
+
+            With buff
+                .Position = 3
+                .writeuint(_Serial.Value)
+                .Position = 7
+                .writeuint(_GumpID)
+                .Position = 11
+                .writeuint(_ButtonID)
+
+                .writeuint(0) 'No Switches
+                .writeuint(0) 'No Texts
+            End With
+        End Sub
+
+        Public Sub New(ByVal bytes() As Byte)
+            MyBase.New(Enums.PacketType.GumpResponse)
+            _Data = bytes
+
+            buff = New UOLite2.SupportClasses.BufferHandler(bytes, True)
+
+            With buff
+                .Position = 3
+                _Serial = New Serial(.readuint)
+                _GumpID = .readuint
+                _ButtonID = .readuint
+
+                'TODO: Read Switch Loop and Text Loop
+            End With
+
+        End Sub
+
+        Public Property Serial As Serial
+            Get
+                Return _Serial
+            End Get
+            Set(ByVal value As Serial)
+                _Serial = value
+            End Set
+        End Property
+
+        Public Property GumpID As UInteger
+            Get
+                Return _GumpID
+            End Get
+            Set(ByVal value As UInteger)
+                _GumpID = value
+            End Set
+        End Property
+
+        Public Property ButtonID As UInteger
+            Get
+                Return _ButtonID
+            End Get
+            Set(ByVal value As UInteger)
+                _ButtonID = value
+            End Set
+        End Property
+
+    End Class
 #End Region
 
 End Namespace
@@ -4462,7 +4582,7 @@ Namespace Enums
         TextUnicode = &HAE
         DeathAnimation = &HAF
         GenericGump = &HB0
-        GenericGumpTrigger = &HB1
+        GumpResponse = &HB1
         ChatMessage = &HB2
         ChatText = &HB3
         TargetObjectList = &HB4

@@ -20,10 +20,9 @@ Namespace SupportClasses
         Private _Serial As UInteger
         Private _X As UInteger
         Private _Y As UInteger
-        Private _Data() As String
+        Protected Friend _Data() As String
         Protected Friend _Text() As String
         Protected Friend _Client As LiteClient
-
         Public ReadOnly Property GumpID() As UInteger
             Get
                 Return _GumpID
@@ -59,7 +58,6 @@ Namespace SupportClasses
                 Return _Y
             End Get
         End Property
-
         Friend Sub New(ByRef GumpPacket As Packets.CompressedGump, ByRef Client As LiteClient)
             _Client = Client
             _GumpID = GumpPacket.GumpID

@@ -286,18 +286,6 @@ Public Class ItemDatabase
         Return ItemSet
     End Function
 
-    Public Overloads Function byType(ByRef Type As UShort, ByRef Container As Serial) As HashSet(Of Item)
-        Dim ItemSet As New HashSet(Of Item)
-
-        For Each S As Serial In _AllSerials
-            If ((DirectCast(_AllItems(S), Item).Type = Type) And (DirectCast(_AllItems(S), Item).Container = Container)) Then
-                ItemSet.Add(DirectCast(_AllItems(S), Item))
-            End If
-        Next
-
-        Return ItemSet
-    End Function
-
     Public Overloads Function byType(ByRef Types As HashSet(Of UShort)) As HashSet(Of Item)
         Dim ItemSet As New HashSet(Of Item)
 
@@ -333,29 +321,7 @@ Public Class ItemDatabase
             Return LiteClient.ZeroSerial
         End If
     End Function
-    Public Function byEUOSerial(ByRef Serial As String) As Serial
-        If _AllSerials.Contains(EUOToUshort(Serial)) Then
-            Return _Client.GetSerialFromString(Serial)
-        Else
-            Return LiteClient.ZeroSerial
-        End If
-    End Function
 
-    Private Function EUOToUshort(ByVal val As [String]) As UShort
-        'Code by BtbN
-        val = val.ToUpper()
-        ' Important!
-        Dim num As UInteger = 0
-
-        For p As Integer = val.Length - 1 To 0 Step -1
-
-            num = num * 26 + (CUInt(AscW(val(p))) - 65)
-        Next
-
-        num = (num - 7) Xor &H45
-
-        Return CUShort(num)
-    End Function
     Public Overloads Function Contains(ByRef Item As Item) As Boolean
         If _AllSerials.Contains(Item.Serial) Then
             Return True
@@ -440,8 +406,33 @@ Public Class ItemDatabase
                 Return _Serials
             End Get
         End Property
+        Public Overloads Function byType(ByRef Type As UShort) As HashSet(Of Item)
+            Dim ItemSet As New HashSet(Of Item)
 
-        Public Function byType(Optional ByRef Recursive As Boolean = False) As HashSet(Of Serial)
+            For Each S As Serial In _Database._AllSerials
+                If DirectCast(_Database._AllItems(S), Item).Type = Type Then
+                    ItemSet.Add(DirectCast(_Database._AllItems(S), Item))
+                End If
+            Next
+
+            Return ItemSet
+        End Function
+
+
+        Public Overloads Function byType(ByRef Types() As UShort) As HashSet(Of Item)
+            Dim ItemSet As New HashSet(Of Item)
+
+            For Each S As Serial In _Database._AllSerials
+                For Each T As UShort In Types
+                    If DirectCast(_Database._AllItems(S), Item).Type = T Then
+                        ItemSet.Add(DirectCast(_Database._AllItems(S), Item))
+                    End If
+                Next
+            Next
+
+            Return ItemSet
+        End Function
+        Public Overloads Function byType(Optional ByRef Recursive As Boolean = False) As HashSet(Of Serial)
             Dim RetSers As New HashSet(Of Serial)
 
             For Each s As Serial In _Serials

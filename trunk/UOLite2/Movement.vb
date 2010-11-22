@@ -104,7 +104,6 @@ Partial Public Class LiteClient
         'Send the packet.
         Send(packet)
 
-
         'Increment stepsync
         If StepSync = 255 Then
             StepSync = 1
@@ -119,40 +118,40 @@ Partial Public Class LiteClient
         If Not Player.Direction = x.Direction Then
             'If he isnt, then turn that direction.
             Player._Direction = x.Direction
+        Else
+            'if he is, then take a step.
+            'Adjust the player's position, assuming that it will accept your movement request.
+            Select Case x.Direction
+                Case UOLite2.Enums.Direction.North
+                    Player._Y -= 1
+
+                Case UOLite2.Enums.Direction.NorthEast
+                    Player._Y -= 1
+                    Player._X += 1
+
+                Case UOLite2.Enums.Direction.East
+                    Player._X += 1
+
+                Case UOLite2.Enums.Direction.SouthEast
+                    Player._X += 1
+                    Player._Y += 1
+
+                Case UOLite2.Enums.Direction.South
+                    Player._Y += 1
+
+                Case UOLite2.Enums.Direction.SouthWest
+                    Player._Y += 1
+                    Player._X -= 1
+
+                Case UOLite2.Enums.Direction.West
+                    Player._X -= 1
+
+                Case UOLite2.Enums.Direction.NorthWest
+                    Player._X -= 1
+                    Player._Y -= 1
+
+            End Select
         End If
-        'if he is, then take a step.
-        'Adjust the player's position, assuming that it will accept your movement request.
-        Select Case x.Direction
-            Case UOLite2.Enums.Direction.North
-                Player._Y -= 1
-
-            Case UOLite2.Enums.Direction.NorthEast
-                Player._Y -= 1
-                Player._X += 1
-
-            Case UOLite2.Enums.Direction.East
-                Player._X += 1
-
-            Case UOLite2.Enums.Direction.SouthEast
-                Player._X += 1
-                Player._Y += 1
-
-            Case UOLite2.Enums.Direction.South
-                Player._Y += 1
-
-            Case UOLite2.Enums.Direction.SouthWest
-                Player._Y += 1
-                Player._X -= 1
-
-            Case UOLite2.Enums.Direction.West
-                Player._X -= 1
-
-            Case UOLite2.Enums.Direction.NorthWest
-                Player._X -= 1
-                Player._Y -= 1
-
-        End Select
-
 
 
 #If DebugMovement Then
@@ -174,7 +173,6 @@ Partial Public Class LiteClient
         MovementBuffer.Clear()
 
         'set the player position and direction.
-        StepSync = packet.Sequence
         Player._X = packet.X
         Player._Y = packet.Y
         Player._Z = packet.Z

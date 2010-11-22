@@ -524,7 +524,6 @@ Partial Class LiteClient
                 RequestSkills()
 
                 'Double click my backpack.
-                Player.DoubleClick()
                 Player.Layers.BackPack.DoubleClick()
 
                 'Check surroundings for scavengable items.
@@ -565,6 +564,7 @@ Partial Class LiteClient
                 'Debug.WriteLine(DirectCast(currentpacket, Packets.CompressedGump).DecompressedTextData)
 
                 Dim retgump As New SupportClasses.Gump(currentpacket, Me)
+
                 RaiseEvent onNewGump(Me, retgump)
 
             Case UOLite2.Enums.PacketType.GenericCommand
@@ -1345,7 +1345,5 @@ Partial Class LiteClient
     End Function
 
 #End Region
-
-
 
 End Class

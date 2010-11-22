@@ -179,6 +179,15 @@ Public Class Item
         _Client.DropItem(TargetContainer)
     End Sub
 
+    Public Sub Equip(ByVal layer As UOLite2.Enums.Layers)
+        Take(Amount)
+
+        While _Client.PlayerBusy
+            'Wait for the player to no longer be busy.
+        End While
+        _Client.EquipItemReq(_Client.Player.Serial, Layer)
+    End Sub
+
     ''' <summary>
     ''' Drops the item as the feet of the player.
     ''' </summary>
@@ -202,6 +211,14 @@ Partial Class LiteClient
     ''' </summary>
     Public Overloads Sub DropItem(ByRef X As UShort, ByRef Y As UShort, ByRef Z As Byte)
         Dim k As Packets.DropObject = New Packets.DropObject(_ItemInHand, X, Y, Z, WorldSerial)
+        Send(k)
+        _ItemInHand = ZeroSerial
+    End Sub
+
+    Public Overloads Sub EquipItemReq(ByVal Container As Serial, ByVal layer As UOLite2.Enums.Layers)
+
+        Dim k As Packets.EquipItemReq = New Packets.EquipItemReq(_ItemInHand, layer, Container) ' .DropObject(_ItemInHand, &HFFFF, &HFFFF, 0, Container)
+        Dim mybytes As Byte() = k.Data
         Send(k)
         _ItemInHand = ZeroSerial
     End Sub
