@@ -18,7 +18,7 @@ namespace DarkLiteUO
             _ScriptTools T = Tools.Tools;
             Serial backpackid = Tools.Client.Player.Layers.BackPack.Serial;
             Item myaxe = T.Finditem("NBK",backpackid);
-            T.Buy(
+            
         }
         public void Start(ref ScriptTools ST)
         {
