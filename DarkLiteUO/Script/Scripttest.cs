@@ -12,10 +12,13 @@ namespace DarkLiteUO
     public class Script : IScriptInterface
     {
         ScriptTools Tools;
-      
+        
         public void Main()
         {
-            Tools.Tools.Pathfind(2634,917,0);
+            _ScriptTools T = Tools.Tools;
+            Serial backpackid = Tools.Client.Player.Layers.BackPack.Serial;
+            Item myaxe = T.Finditem("NBK",backpackid);
+            T.Buy(
         }
         public void Start(ref ScriptTools ST)
         {

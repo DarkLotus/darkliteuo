@@ -38,7 +38,7 @@ namespace DarkLiteUO
             _name = config.Username;
             //this.Name = config.Username;
             this.Text = config.Username;
-            Client.onSkillUpdate += new LiteClient.onSkillUpdateEventHandler(Client_onSkillUpdate);
+            //Client.onSkillUpdate += new LiteClient.onSkillUpdateEventHandler(Client_onSkillUpdate);
             Client.onRecievedServerList += new LiteClient.onRecievedServerListEventHandler(Client_onRecievedServerList);
             Client.onLoginConfirm += new LiteClient.onLoginConfirmEventHandler(Client_onLoginConfirm);
             Client.onLoginComplete += new LiteClient.onLoginCompleteEventHandler(Client_onLoginComplete);
@@ -48,14 +48,14 @@ namespace DarkLiteUO
             Client.onCliLocSpeech += new LiteClient.onCliLocSpeechEventHandler(Client_onCliLocSpeech);
             Client.onSpeech += new LiteClient.onSpeechEventHandler(Client_onSpeech);
             Client.onCharacterListReceive += new UOLite2.LiteClient.onCharacterListReceiveEventHandler(Client_onCharacterListReceive);
-            Client.onPacketReceive += new UOLite2.LiteClient.onPacketReceiveEventHandler(Client_onPacketReceive);
+            //Client.onPacketReceive += new UOLite2.LiteClient.onPacketReceiveEventHandler(Client_onPacketReceive);
             Client.onConnectionLoss += new LiteClient.onConnectionLossEventHandler(Client_onConnectionLoss);
-            Client.onMovementBlocked += new LiteClient.onMovementBlockedEventHandler(Client_onMovementBlocked);
-            Client.onNewGump += new LiteClient.onNewGumpEventHandler(Client_onNewGump);
-            Client.onNewItem += new LiteClient.onNewItemEventHandler(Client_onNewItem);
-            Client.onNewMobile += new LiteClient.onNewMobileEventHandler(Client_onNewMobile);
-            Client.onPlayerMove += new LiteClient.onPlayerMoveEventHandler(Client_onPlayerMove);
-            Client.onTargetRequest += new LiteClient.onTargetRequestEventHandler(Client_onTargetRequest);
+            //Client.onMovementBlocked += new LiteClient.onMovementBlockedEventHandler(Client_onMovementBlocked);
+            //Client.onNewGump += new LiteClient.onNewGumpEventHandler(Client_onNewGump);
+            //Client.onNewItem += new LiteClient.onNewItemEventHandler(Client_onNewItem);
+            //Client.onNewMobile += new LiteClient.onNewMobileEventHandler(Client_onNewMobile);
+            //Client.onPlayerMove += new LiteClient.onPlayerMoveEventHandler(Client_onPlayerMove);
+            //Client.onTargetRequest += new LiteClient.onTargetRequestEventHandler(Client_onTargetRequest);
 
             
             InitializeComponent();

@@ -93,7 +93,7 @@ namespace DarkLiteUO
                 Tree _Tree = i;
                 if (Tools.Tools.Get2DDistance(Tools.Client.Player.X, Tools.Client.Player.Y, _Tree.X, _Tree.Y) >= 2)
                 {
-                    Tools.Pathfind(_Tree.X, _Tree.Y, 2); // x/y/Tiles away from location to stop
+                    Tools.Pathfind(_Tree.X, _Tree.Y, 1); // x/y/Tiles away from location to stop
                 }
                 Chop(_Tree);
                 Tools.Client.onCliLocSpeech -= Client_onCliLocSpeech;
@@ -131,14 +131,14 @@ namespace DarkLiteUO
                     {
                         Item _myaxe = Tools.Client.Player.Layers.BackPack.Contents.byType(ref AxeType).First<Item>();
                         Serial player = (Serial)Tools.Client.Player.Serial;
-                        if (_myaxe != null) { _myaxe.Equip(UOLite2.Enums.Layers.RightHand); ;}
+                        if (_myaxe != null) { _myaxe.Equip(UOLite2.Enums.Layers.RightHand);}
                     }
                 }
                 else
                 {
                         Item _myaxe = Tools.Client.Player.Layers.BackPack.Contents.byType(ref AxeType).First<Item>();
                         Serial player = (Serial)Tools.Client.Player.Serial;
-                        if (_myaxe != null) { _myaxe.Equip(UOLite2.Enums.Layers.RightHand); ;}
+                        if (_myaxe != null) { _myaxe.Equip(UOLite2.Enums.Layers.RightHand);}
 
                 }
                 Tools.Client.Targeting = false;
@@ -147,6 +147,7 @@ namespace DarkLiteUO
                 //Client.Items.byType(ref AxeType).FirstOrDefault<Item>().DoubleClick();
                 WaitForTarget(1500);
                 Tools.Client.Target(_Tree.X, _Tree.Y, _Tree.Z, (ushort)_Tree.ID);
+                Thread.Sleep(1000);
                 System.Diagnostics.Stopwatch timeout = new System.Diagnostics.Stopwatch();
                 timeout.Start();
                 while (timeout.ElapsedMilliseconds <= 3000)
@@ -157,9 +158,6 @@ namespace DarkLiteUO
                     if (Journal[0].Contains("found")) { break; }
                     if (Journal[0].Contains("use an axe")) { return; }
                 }
-
-
-
             }
         }
         void WaitForTarget(long lTimeout)
