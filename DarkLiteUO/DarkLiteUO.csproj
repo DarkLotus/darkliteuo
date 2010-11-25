@@ -84,6 +84,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Script\Features\BuySell.cs" />
+    <Compile Include="Script\Features\Contextmenus.cs" />
     <Compile Include="Script\Features\Finditem.cs" />
     <Compile Include="Script\Features\Movement.cs" />
     <Compile Include="Script\Features\RailImport.cs" />

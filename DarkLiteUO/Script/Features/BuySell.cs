@@ -18,11 +18,12 @@ namespace DarkLiteUO
         #region Sell
         public void Sell(Serial VendorID, ushort[] Itemtypes)
         {
-            if (!VendorID.IsValid) { return; }
+            Mobile npc = Client.Mobiles.get_Mobile(VendorID);
+            if (npc == null) { return; }
             _vendorid = null;
             _items = Itemtypes;
             Client.onPacketReceive += new LiteClient.onPacketReceiveEventHandler(HandleSellList);
-            Speak(Client.Mobiles.get_Mobile(VendorID).Name + " Sell");
+            Speak(npc.Name + " Sell");
         }
 
         void HandleSellList(ref LiteClient Client, ref byte[] bytes)
@@ -79,19 +80,21 @@ namespace DarkLiteUO
         #region Buy
         public void Buy(Serial VendorID, ushort[] Itemtypes)
         {
-            if (!VendorID.IsValid) { return; }
+            Mobile npc = Client.Mobiles.get_Mobile(VendorID);
+            if (npc == null) { return; }
             _vendorid = null;
             _items = Itemtypes;
             Client.onPacketReceive += new LiteClient.onPacketReceiveEventHandler(HandleBuyWindowOpen);
-            Speak(Client.Mobiles.get_Mobile(VendorID).Name + " Buy");
+            Speak(npc.Name + " Buy");
         }
         public void Buy(Serial VendorID, ushort Itemtype)
         {
-            if (!VendorID.IsValid) { return; }
+            Mobile npc = Client.Mobiles.get_Mobile(VendorID);
+            if (npc == null) { return; }
             _vendorid = null;
             _items = new ushort[] { Itemtype };
             Client.onPacketReceive += new LiteClient.onPacketReceiveEventHandler(HandleBuyWindowOpen);
-            Speak(Client.Mobiles.get_Mobile(VendorID).Name + " Buy");
+            Speak(npc.Name + " Buy");
         }
         private void HandleBuyWindowOpen(ref LiteClient Client, ref byte[] bytes)
         {
@@ -118,7 +121,6 @@ namespace DarkLiteUO
         {
             
             UOLite2.SupportClasses.BufferHandler buff = new UOLite2.SupportClasses.BufferHandler((7+(Items.Count * 7)));
-
             buff.WriteByte(0x3B);
             buff.writeushort((ushort)(7 + (Items.Count * 7)));
             buff.writeuint(VendorID.Value);

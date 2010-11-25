@@ -56,7 +56,8 @@ namespace DarkLiteUO
             //Client.onNewMobile += new LiteClient.onNewMobileEventHandler(Client_onNewMobile);
             //Client.onPlayerMove += new LiteClient.onPlayerMoveEventHandler(Client_onPlayerMove);
             //Client.onTargetRequest += new LiteClient.onTargetRequestEventHandler(Client_onTargetRequest);
-
+            Client.onNewMobile += new LiteClient.onNewMobileEventHandler(Client_onNewMobile);
+            Client.onPacketReceive += new LiteClient.onPacketReceiveEventHandler(Client_onPacketReceive);
             
             InitializeComponent();
             setuptreeview();
@@ -279,6 +280,21 @@ namespace DarkLiteUO
             ItemsNode.Name = "Items";
             ItemsNode.Text = "Items";
             vartree.Nodes.Add(ItemsNode);
+
+            TreeNode Mobilesnode = new TreeNode("Mobiles");
+            foreach (Mobile i in Client.Mobiles)
+            {
+                TreeNode inode = new TreeNode(i.Name);
+                inode.Nodes.Add("Serial : " + i.Serial);
+                inode.Nodes.Add("Type: " + i.Type.ToString());
+                inode.Nodes.Add("Hue : " + i.Hue);
+                inode.Nodes.Add("X : " + i.X);
+                inode.Nodes.Add("Y : " + i.Y);
+                Mobilesnode.Nodes.Add(inode);
+            }
+            Mobilesnode.Name = "Mobiles";
+            Mobilesnode.Text = "Mobiles";
+            vartree.Nodes.Add(Mobilesnode);
 
             foreach (GameVariable[] vars in variableCategs.Values)
             {
