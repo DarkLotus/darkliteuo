@@ -7,6 +7,7 @@ using UOLite2;
 using System.Windows.Forms;
 using UOLite2.SupportClasses;
 using Ultima;
+using DarkLiteUO;
 namespace DarkLiteUO
 {
     public class Script : IScriptInterface
@@ -16,8 +17,23 @@ namespace DarkLiteUO
         public void Main()
         {
             _ScriptTools T = Tools.Tools;
-            Serial backpackid = Tools.Client.Player.Layers.BackPack.Serial;
-            Item myaxe = T.Finditem("NBK",backpackid);
+            LiteClient C = Tools.Client; // these just save a bit of typing,
+
+            Serial backpackid = C.Player.Layers.BackPack.Serial;
+            Item myaxe = T.Finditem("NBK",backpackid);// Sample Finditem usage find by an EUO type inside a container
+
+            ushort[] itemstobuy = new ushort[] { T.EUOToUshort("BBK"), T.EUOToUshort("JSF") }; // add two items to our buylist
+            Serial vendorid = new Serial(0000000);
+            // Before calling buy you need to have the serial of the vendor you want to buy off
+            T.Buy(vendorid, itemstobuy);// Calling this will send a buymenu req, which then adds an event handler so when you receive the buy menu it auto responds with what you want to buy
+            // if vendor does not exist, or items are not their nothing will happen. Add a wait after each buy as its non blocking so give 2-3 seconds for the server to reply etc
+            // Both buy and sell will do so at the max amount the vendor has or you have.
+            T.Sell(vendorid, itemstobuy); // Same as above.
+            ScriptTools.Coordinate[] myrail = T.ImportRail("myrail.txt"); // imports the rail from text really no need to load Z as pathfinding doesnt take Z anyway
+            foreach (ScriptTools.Coordinate c in myrail)
+            {
+                T.Pathfind(c.X, c.Y, 0);
+            }
             
         }
         public void Start(ref ScriptTools ST)

@@ -15,8 +15,19 @@ namespace DarkLiteUO
         public LiteClient Client;
         public myTabPage GUI;
         public _ScriptTools Tools;
-        
 
+        public static struct Coordinate
+        {
+            public ushort X;
+            public ushort Y;
+            public ushort Z;
+            public void Add(ushort X, ushort Y, ushort Z)
+            {
+                this.X = X;
+                this.Y = Y;
+                this.Z = Z;
+            }
+        }
         public ScriptTools(ref LiteClient _client, myTabPage _gui)
         {
             this.Client = _client;
