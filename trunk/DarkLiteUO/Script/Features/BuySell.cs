@@ -12,6 +12,7 @@ namespace DarkLiteUO
 
     public partial class _ScriptTools
     {
+        // Todo add Buy Sell for single items with quantity
         private Serial _vendorid;
         private ushort[] _items;
         #region Sell
