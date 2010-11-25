@@ -16,7 +16,7 @@ namespace DarkLiteUO
         public myTabPage GUI;
         public _ScriptTools Tools;
 
-        public static struct Coordinate
+        public struct Coordinate
         {
             public ushort X;
             public ushort Y;
@@ -51,7 +51,7 @@ namespace DarkLiteUO
         {
             this.Client = Client;
             this.GUI = GUI;
-            
+
         }
 
 

@@ -24,11 +24,7 @@ namespace DarkLiteUO
            // throw new NotImplementedException();
         }
 
-        void Client_onNewMobile(ref LiteClient Client, Mobile Mobile)
-        {
-           // throw new NotImplementedException();
-           
-        }
+   
 
         void Client_onNewItem(ref LiteClient Client, Item Item)
         {
@@ -114,11 +110,7 @@ namespace DarkLiteUO
            // this.UpdateLog("Sent: " + GetString(data));
         }
 
-        private void Client_onPacketReceive(ref UOLite2.LiteClient Client, ref byte[] bytes)
-        {
-            // this.UpdateLog("Received: " + GetString(bytes));
-
-        }
+ 
         private void Client_onLoginComplete()
         {
             UpdateLog("Login Complete");
@@ -143,6 +135,49 @@ namespace DarkLiteUO
         public static String GetString(byte[] text)
         {
             return ASCIIEncoding.UTF8.GetString(text);
+        }
+        void Client_onPacketReceive(ref LiteClient Client, ref byte[] bytes)
+        {
+            switch (bytes[0])
+            {
+                case 0x98: // All Names
+                    HandleAllNames(bytes);
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        private void HandleAllNames(byte[] bytes)
+        {
+            UOLite2.SupportClasses.BufferHandler buff = new UOLite2.SupportClasses.BufferHandler(bytes, true);
+            byte x = buff.readbyte();
+            ushort y = buff.readushort();
+            uint id = buff.readuint();
+            string name = buff.readstr();
+            Serial serial = new Serial(id);
+            if (serial != Client.Player.Serial)
+            {
+                Client.Mobiles.get_Mobile(serial)._Name = name;
+                //UpdateLog("Setting npc name to: " + Client.Mobiles.get_Mobile(serial).Name + id);
+            }
+        }
+
+        void Client_onNewMobile(ref LiteClient Client, Mobile Mobile)
+        {
+            // Request the mobiles name
+            UOLite2.SupportClasses.BufferHandler buff = new UOLite2.SupportClasses.BufferHandler(7,true);
+            
+            buff.WriteByte(0x98);
+            buff.writeushort(7);
+            buff.writeuint(Mobile.Serial.Value);
+            Send(buff.buffer);
+        }
+
+        private void Send(byte[] data)
+        {
+            byte[] dat = data;
+            Client.Send(ref dat);
         }
 
     }
