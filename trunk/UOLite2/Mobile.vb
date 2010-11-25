@@ -16,7 +16,7 @@ Public Class Mobile
     End Sub
 
 #Region "Private Variables"
-    Friend _Name As String = ""
+    Public _Name As String = ""
     Friend _Status As UOLite2.Enums.MobileStatus
     Friend _Notoriety As UOLite2.Enums.Reputation
     Friend _Hits As UShort = 1
@@ -162,6 +162,7 @@ Public Class Mobile
         Get
             Return _Name
         End Get
+
     End Property
 
     ''' <summary>

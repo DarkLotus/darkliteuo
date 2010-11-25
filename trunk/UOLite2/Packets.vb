@@ -3948,7 +3948,7 @@ Namespace SupportClasses
 #Else
     'Buffer Serialization and Deserialization
     ''' Hide this class from the user, there is no reason from him/her to see it.
-    <System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)> _
+    '<System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)> _
     Public Class BufferHandler
 #End If
         Inherits Stream
