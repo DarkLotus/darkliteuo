@@ -13,25 +13,26 @@ namespace DarkLiteUO
     public partial class _ScriptTools
     {
         // Todo add Buy Sell for single items with quantity
-        private Serial _vendorid;
+        private Mobile _mobile;
         private ushort[] _items;
         #region Sell
         public void Sell(Serial VendorID, ushort[] Itemtypes)
         {
-            Mobile npc = Client.Mobiles.get_Mobile(VendorID);
-            if (npc == null) { return; }
-            _vendorid = null;
+            _mobile = Client.Mobiles.get_Mobile(VendorID);
+            if (_mobile == null) { return; }
+            
             _items = Itemtypes;
             Client.onPacketReceive += new LiteClient.onPacketReceiveEventHandler(HandleSellList);
-            Speak(npc.Name + " Sell");
+            ContextMenu(_mobile.Serial, 1);
+            //Speak(npc.Name + " Sell");
         }
 
         void HandleSellList(ref LiteClient Client, ref byte[] bytes)
         {
             if (bytes[0] != 0x9E) { return; }
-            UOLite2.SupportClasses.BufferHandler buff = new UOLite2.SupportClasses.BufferHandler(bytes);
-            buff.Position = 3;
-            _vendorid = buff.readuint();
+            UOLite2.SupportClasses.BufferHandler buff = new UOLite2.SupportClasses.BufferHandler(bytes,true);
+            buff.Position = 7;// or 8?
+            //_vendorid = buff.readuint();
             ushort items = buff.readushort();
             List<uint> Items = new List<uint>();
             List<ushort> itemquants = new List<ushort>();
@@ -51,9 +52,9 @@ namespace DarkLiteUO
                 Items.Add(id);
                 itemquants.Add(amount);
             }
-            
-            
-                SellItems(_vendorid, Items, itemquants);
+
+
+            SellItems(_mobile.Serial, Items, itemquants);
             Client.onPacketReceive -= HandleSellList;
             }
             
@@ -61,7 +62,7 @@ namespace DarkLiteUO
         private void SellItems(Serial VendorID, List<uint> Items, List<ushort> itemquants)
         {
 
-            UOLite2.SupportClasses.BufferHandler buff = new UOLite2.SupportClasses.BufferHandler((8 + (Items.Count * 6)));
+            UOLite2.SupportClasses.BufferHandler buff = new UOLite2.SupportClasses.BufferHandler((uint)(8 + (Items.Count * 6)),true);
 
             buff.WriteByte(0x9F);
             buff.writeushort((ushort)(8 + (Items.Count * 6)));
@@ -80,49 +81,70 @@ namespace DarkLiteUO
         #region Buy
         public void Buy(Serial VendorID, ushort[] Itemtypes)
         {
-            Mobile npc = Client.Mobiles.get_Mobile(VendorID);
-            if (npc == null) { return; }
-            _vendorid = null;
+            _mobile = Client.Mobiles.get_Mobile(VendorID);
+            if (_mobile == null) { return; }
             _items = Itemtypes;
             Client.onPacketReceive += new LiteClient.onPacketReceiveEventHandler(HandleBuyWindowOpen);
-            Speak(npc.Name + " Buy");
+            ContextMenu(_mobile.Serial, 1);
+            //Speak(npc.Name + " Buy");
         }
         public void Buy(Serial VendorID, ushort Itemtype)
         {
-            Mobile npc = Client.Mobiles.get_Mobile(VendorID);
-            if (npc == null) { return; }
-            _vendorid = null;
+            _mobile = Client.Mobiles.get_Mobile(VendorID);
+            if (_mobile == null) { return; }
             _items = new ushort[] { Itemtype };
             Client.onPacketReceive += new LiteClient.onPacketReceiveEventHandler(HandleBuyWindowOpen);
-            Speak(npc.Name + " Buy");
+            ContextMenu(_mobile.Serial, 1);
         }
         private void HandleBuyWindowOpen(ref LiteClient Client, ref byte[] bytes)
         {
-            if (bytes[0] != 0x74) { return; }
-             UOLite2.SupportClasses.BufferHandler buff = new UOLite2.SupportClasses.BufferHandler(bytes);
-             buff.Position = 3;
-             _vendorid = buff.readuint();
-            List<Item> Items = new List<Item>();
-             if (_vendorid.IsValid)
-             {
-                 Mobile vendor = Client.Mobiles.get_Mobile(_vendorid);
-                 foreach (Item i in vendor.Contents.Items)
-                 {
-                     if(_items.Contains<ushort>(i.Type))
-                     {
-                         Items.Add(i);
-                     }
-                 }
-                 BuyItems(_vendorid, Items);
-             }
-             Client.onPacketReceive -= HandleBuyWindowOpen;
+            if (bytes[0] == 0x3C)
+            {
+                UOLite2.SupportClasses.BufferHandler buff = new UOLite2.SupportClasses.BufferHandler(bytes, true);
+                buff.Position = 3;
+                ushort numitems = buff.readushort();
+                for (int i = 0; i <= numitems; i++)
+                {
+                    Serial serial = new Serial(buff.readuint());
+                    ushort type = buff.readushort();
+                    buff.readbyte();
+                    ushort count = buff.readushort();
+                    buff.readushort(); // X
+                    buff.readushort();// Y
+                    Serial Container = (buff.readuint() | 0x40000000);
+                    GUI.UpdateLog(Container.Value + " Container serial");
+                }
+            }
+            if (bytes[0] == 0x74)
+            {
+                UOLite2.SupportClasses.BufferHandler buff = new UOLite2.SupportClasses.BufferHandler(bytes, true);
+                buff.Position = 3;
+                Serial vendorid = new Serial(buff.readuint());
+                GUI.UpdateLog("Vendors crazy ID = " + vendorid);
+
+                // assuming 3c has been parsed as it should be before this packet is handled.
+                List<Item> Items = new List<Item>();
+
+                foreach (Item i in Finditem(_items,vendorid))
+                {
+                   
+                        if (_items.Contains<ushort>(i.Type))
+                        {
+                            GUI.UpdateLog("Found item to buy" + i.TypeName + "  stack:" + i.Amount);
+                            Items.Add(i);
+                        }
+                    
+                }
+                BuyItems(_mobile.Serial, Items);
+                Client.onPacketReceive -= HandleBuyWindowOpen;
+            }
         }
         private void BuyItems(Serial VendorID, List<Item> Items)
         {
             
-            UOLite2.SupportClasses.BufferHandler buff = new UOLite2.SupportClasses.BufferHandler((7+(Items.Count * 7)));
+            UOLite2.SupportClasses.BufferHandler buff = new UOLite2.SupportClasses.BufferHandler((uint)(8+(Items.Count * 7)),true);
             buff.WriteByte(0x3B);
-            buff.writeushort((ushort)(7 + (Items.Count * 7)));
+            buff.writeushort((ushort)(8 + (Items.Count * 7)));
             buff.writeuint(VendorID.Value);
             buff.WriteByte(0x02);
             foreach (Item i in Items)
