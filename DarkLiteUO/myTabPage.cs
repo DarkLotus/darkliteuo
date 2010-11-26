@@ -271,7 +271,7 @@ namespace DarkLiteUO
                 TreeNode inode = new TreeNode(i.TypeName);
                 inode.Nodes.Add("Serial : " + i.Serial);
                 inode.Nodes.Add("Type: " + i.Type.ToString());
-                inode.Nodes.Add("Hue : " + i.Hue);
+                inode.Nodes.Add("Stack : " + i.Properties.Count);
                 inode.Nodes.Add("X : " + i.X);
                 inode.Nodes.Add("Y : " + i.Y);
                 inode.Nodes.Add("Container : " + i.Container);

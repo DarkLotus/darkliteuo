@@ -169,12 +169,11 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\UOLite2 offical\UOLite2\UOLite2.vbproj">
+    <ProjectReference Include="..\..\UOLite2\UOLite2.vbproj">
       <Project>{00DA43EC-1DC8-4E36-989C-DF34E7367060}</Project>
       <Name>UOLite2</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
