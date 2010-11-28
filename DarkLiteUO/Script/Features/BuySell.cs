@@ -49,9 +49,13 @@ namespace DarkLiteUO
                     name = name + buff.readchar();
                 }
                 buff.Position += 1;
-                Items.Add(id);
-                itemquants.Add(amount);
-            }
+                if (_items.Contains(model))
+                {
+                    Items.Add(id);
+                    itemquants.Add(amount);
+                }
+
+             }
 
 
             SellItems(_mobile.Serial, Items, itemquants);
@@ -62,10 +66,10 @@ namespace DarkLiteUO
         private void SellItems(Serial VendorID, List<uint> Items, List<ushort> itemquants)
         {
 
-            UOLite2.SupportClasses.BufferHandler buff = new UOLite2.SupportClasses.BufferHandler((uint)(8 + (Items.Count * 6)),true);
+            UOLite2.SupportClasses.BufferHandler buff = new UOLite2.SupportClasses.BufferHandler((uint)(9 + (Items.Count * 6)),true);
 
             buff.WriteByte(0x9F);
-            buff.writeushort((ushort)(8 + (Items.Count * 6)));
+            buff.writeushort((ushort)(9 + (Items.Count * 6)));
             buff.writeuint(VendorID.Value);
             buff.writeushort((ushort)Items.Count);
             for (int i = 0; i <= Items.Count -1;i++)
