@@ -108,7 +108,8 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Script\RecallMining.cs" />
-    <Compile Include="Script\ScriptCompiler.cs" />
+    <Compile Include="Script\Features\ScriptCompiler.cs" />
+    <Compile Include="Script\SampleScripts.cs" />
     <Compile Include="Script\Scripttest.cs" />
     <Compile Include="Script\Features\ScriptTools.cs" />
     <Compile Include="myTabPage.cs">
