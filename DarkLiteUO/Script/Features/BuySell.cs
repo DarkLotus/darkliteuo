@@ -15,18 +15,26 @@ namespace DarkLiteUO
         // Todo add Buy Sell for single items with quantity
         private Mobile _mobile;
         private ushort[] _items;
+        private ushort _quanity;
         #region Sell
-        public void Sell(Serial VendorID, ushort[] Itemtypes)
+        internal void Sell(Serial VendorID, ushort[] Itemtypes)
+        {
+            _mobile = Client.Mobiles.get_Mobile(VendorID);
+            if (_mobile == null) { return; }         
+            _items = Itemtypes;
+            Client.onPacketReceive += new LiteClient.onPacketReceiveEventHandler(HandleSellList);
+            ContextMenu(_mobile.Serial, 2);
+            //Speak(npc.Name + " Sell");
+        }
+        internal void Sell(Serial VendorID, ushort Itemtypes)
         {
             _mobile = Client.Mobiles.get_Mobile(VendorID);
             if (_mobile == null) { return; }
-            
-            _items = Itemtypes;
+            _items = new ushort[] { Itemtypes };
             Client.onPacketReceive += new LiteClient.onPacketReceiveEventHandler(HandleSellList);
-            ContextMenu(_mobile.Serial, 1);
+            ContextMenu(_mobile.Serial, 2);
             //Speak(npc.Name + " Sell");
         }
-
         void HandleSellList(ref LiteClient Client, ref byte[] bytes)
         {
             if (bytes[0] != 0x9E) { return; }
@@ -83,8 +91,10 @@ namespace DarkLiteUO
         #endregion
 
         #region Buy
+         
         public void Buy(Serial VendorID, ushort[] Itemtypes)
         {
+            _quanity = 0;
             _mobile = Client.Mobiles.get_Mobile(VendorID);
             if (_mobile == null) { return; }
             _items = Itemtypes;
@@ -94,6 +104,16 @@ namespace DarkLiteUO
         }
         public void Buy(Serial VendorID, ushort Itemtype)
         {
+            _quanity = 0;
+            _mobile = Client.Mobiles.get_Mobile(VendorID);
+            if (_mobile == null) { return; }
+            _items = new ushort[] { Itemtype };
+            Client.onPacketReceive += new LiteClient.onPacketReceiveEventHandler(HandleBuyWindowOpen);
+            ContextMenu(_mobile.Serial, 1);
+        }
+        public void Buy(Serial VendorID, ushort Itemtype, ushort Quantity)
+        {
+            _quanity = Quantity;
             _mobile = Client.Mobiles.get_Mobile(VendorID);
             if (_mobile == null) { return; }
             _items = new ushort[] { Itemtype };
@@ -102,7 +122,7 @@ namespace DarkLiteUO
         }
         private void HandleBuyWindowOpen(ref LiteClient Client, ref byte[] bytes)
         {
-            if (bytes[0] == 0x3C)
+            /*if (bytes[0] == 0x3C)
             {
                 UOLite2.SupportClasses.BufferHandler buff = new UOLite2.SupportClasses.BufferHandler(bytes, true);
                 buff.Position = 3;
@@ -118,7 +138,7 @@ namespace DarkLiteUO
                     Serial Container = (buff.readuint() | 0x40000000);
                     GUI.UpdateLog(Container.Value + " Container serial");
                 }
-            }
+            }*/
             if (bytes[0] == 0x74)
             {
                 UOLite2.SupportClasses.BufferHandler buff = new UOLite2.SupportClasses.BufferHandler(bytes, true);
@@ -155,13 +175,23 @@ namespace DarkLiteUO
             {
                 buff.WriteByte(0x1A);
                 buff.writeuint(i.Serial.Value);
-                buff.writeushort(i.Amount);
+                if (_quanity == 0)
+                {
+                    buff.writeushort(i.Amount);
+                }
+                else 
+                {
+                    if (_quanity > i.Amount) { buff.writeushort(i.Amount); }
+                    else{buff.writeushort(_quanity); }
+                }
             }
                 byte[] bf = buff.buffer;
                 Client.Send(ref bf);
         }
 
 
+
+       
     }
         #endregion
 }

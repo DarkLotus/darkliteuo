@@ -34,22 +34,13 @@ namespace DarkLiteUO
         }
         public UOLite2.Item Finditem(ushort type,Serial Container)
         {
-            foreach (UOLite2.Item i in Client.Items.Items)
-            {
-                if((i.Type == type) && ( i.Container == Container))
-                {return i; }
-            }
-            return null;
+            ushort[] _type = new ushort[] { type };
+            return Finditem(_type, Container).First();
         }
         public UOLite2.Item Finditem(string type, Serial Container)
         {
-            ushort _type = EUOToUshort(type);
-            foreach (UOLite2.Item i in Client.Items.Items)
-            {
-                if ((i.Type == _type) && (i.Container == Container))
-                { return i; }
-            }
-            return null;
+            ushort[] _type = new ushort[] { EUOToUshort(type) };
+            return Finditem(_type,Container).First();
         }
 
         public UOLite2.Item[] Finditem(ushort[] type, Serial Container)

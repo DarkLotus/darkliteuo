@@ -110,6 +110,9 @@
     <Compile Include="Script\RecallMining.cs" />
     <Compile Include="Script\Features\ScriptCompiler.cs" />
     <Compile Include="Script\SampleScripts.cs" />
+    <Compile Include="Script\Samples\AutoScribe.cs" />
+    <Compile Include="Script\Samples\Scribe.cs" />
+    <Compile Include="Script\Samples\Gater.cs" />
     <Compile Include="Script\Scripttest.cs" />
     <Compile Include="Script\Features\ScriptTools.cs" />
     <Compile Include="myTabPage.cs">
@@ -175,6 +178,7 @@
       <Name>UOLite2</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

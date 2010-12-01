@@ -7,6 +7,7 @@ using UOLite2;
 using System.Windows.Forms;
 using Ultima;
 using System.Drawing;
+using UOLite2.SupportClasses;
 namespace DarkLiteUO
 {
 
@@ -46,7 +47,7 @@ namespace DarkLiteUO
         LiteClient Client;
         myTabPage GUI;
  
-
+          private ushort _rune;
         public _ScriptTools(ref LiteClient Client, myTabPage GUI)
         {
             this.Client = Client;
@@ -54,7 +55,19 @@ namespace DarkLiteUO
 
         }
 
+        public void Recall(Serial RunebookID, ushort Runenum)
+        {
+            Client.onNewGump += new LiteClient.onNewGumpEventHandler(Runebookgumphandler);
+            _rune = Runenum;
+            Client.Items.get_Item(RunebookID).DoubleClick();
+            Thread.Sleep(5000);// Replace with X/Y check and timeout
+        }
 
+        private void Runebookgumphandler(ref LiteClient Client, ref Gump Gump)
+        {
+            GumpMenuSelection(Gump.Serial, Gump.GumpID, _rune);
+            Client.onNewGump -= Runebookgumphandler;
+        }
 
 
         public void Speak(String text)
