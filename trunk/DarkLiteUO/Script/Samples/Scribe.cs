@@ -9,7 +9,7 @@ using UOLite2.SupportClasses;
 using Ultima;
 namespace DarkLiteUO
 {
-    public class sample : IScriptInterface
+    public class Scribe : IScriptInterface
     {
         LiteClient Client; // our liteclient
         _ScriptTools T;
@@ -35,7 +35,7 @@ namespace DarkLiteUO
             Item Pen; // 
             Client.onNewGump += new LiteClient.onNewGumpEventHandler(Client_onNewGump); // Grab the event fired on new gumps
             while (myScriptRunning)
-            {  
+            {
                 Pen = Client.Items.byType(ref ToolType).First(); // sets our pen to the first found object
                 if (Pen == null) { break; } // no pens we exit script
                 Pen.DoubleClick();
@@ -83,7 +83,7 @@ namespace DarkLiteUO
                         break;
                 }
 
-            
+
             }
         }
     }
