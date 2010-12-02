@@ -182,7 +182,35 @@ Public Class ItemDatabase
 
         Add(j)
     End Sub
+    Friend Overloads Sub Add(ByVal Packet As Packets.ShowItemSA)
 
+        Dim j As New Item(_Client, Packet.Serial)
+
+        j._Container = LiteClient.WorldSerial 'Set the container to the worldserial, because thats where this is.
+        j._Type = Packet.ItemType
+        j._Amount = Packet.Amount
+        j._StackID = Packet.StackID
+        j._X = Packet.X
+        j._Y = Packet.Y
+        j._Direction = Packet.Direction
+        j._Z = Packet.Z
+        j._Hue = Packet.Hue
+
+#Const DEBUGShowItem = False
+
+#If DEBUGShowItem = True Then
+            Console.WriteLine("-Adding Item by Show ItemSA.")
+            Console.WriteLine(" Packet: " & BitConverter.ToString(Packet.Data))
+            Console.WriteLine(" Serial: " & j.Serial.ToString)
+            Console.WriteLine(" Serial#: " & j.Serial.Value)
+#End If
+
+#If DebugItemList Then
+            Console.WriteLine("-Adding Item by ShowItem: " & j.Serial.ToString)
+#End If
+
+        Add(j)
+    End Sub
 #End Region
 
 #Region "Update Item(s)"

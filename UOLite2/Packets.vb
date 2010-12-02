@@ -1320,7 +1320,108 @@ Namespace Packets
         End Property
 
     End Class
+    Public Class ShowItemSA
+        Inherits Packet
 
+        Private _Serial As Serial
+        Private _ItemType As UShort = 0
+        Private _Amount As UShort = 1
+        Private _StackID As Byte = 0
+        Private _X As UShort = 0
+        Private _Y As UShort = 0
+        Private _Direction As Byte = 0
+        Private _Z As Byte = 0
+        Private _Hue As UShort = 0
+        Private _Status As Byte = 0
+        Private _layer As Byte = 0
+
+        Friend Sub New(ByVal bytes() As Byte)
+            MyBase.New(UOLite2.Enums.PacketType.ShowItemSA)
+            _Data = bytes
+            _size = bytes.Length
+            buff = New UOLite2.SupportClasses.BufferHandler(bytes, True)
+
+            With buff
+                .Position = 4
+                _Serial = .readuint
+                _ItemType = .readushort
+                _Direction = .readbyte
+                _Amount = .readushort 'Check Serial for flag 0x80000000
+                .readushort()
+
+                _X = .readushort
+                _Y = .readushort
+
+                _Z = .readbyte
+                _layer = .readbyte
+                _Hue = .readushort
+                _Status = .readbyte
+
+            End With
+
+        End Sub
+
+        Public ReadOnly Property Serial() As Serial
+            Get
+                Return _Serial
+            End Get
+        End Property
+
+        Public ReadOnly Property ItemType() As UShort
+            Get
+                Return _ItemType
+            End Get
+        End Property
+
+        Public ReadOnly Property Amount() As UShort
+            Get
+                Return _Amount
+            End Get
+        End Property
+
+        Public ReadOnly Property StackID() As UShort
+            Get
+                Return _StackID
+            End Get
+        End Property
+
+        Public ReadOnly Property X() As UShort
+            Get
+                Return _X
+            End Get
+        End Property
+
+        Public ReadOnly Property Y() As UShort
+            Get
+                Return _Y
+            End Get
+        End Property
+
+        Public ReadOnly Property Direction() As UOLite2.Enums.Direction
+            Get
+                Return _Direction
+            End Get
+        End Property
+
+        Public ReadOnly Property Z() As Byte
+            Get
+                Return _Z
+            End Get
+        End Property
+
+        Public ReadOnly Property Hue() As UShort
+            Get
+                Return _Hue
+            End Get
+        End Property
+
+        Public ReadOnly Property Status() As Byte
+            Get
+                Return _Status
+            End Get
+        End Property
+
+    End Class
 #End Region
 
 #Region "Mobiles"
@@ -4626,6 +4727,7 @@ Namespace Enums
         Mahjong = &HDA
         CharacterTransferLog = &HDB
         CompressedGump = &HDD
+        ShowItemSA = &HF3
     End Enum
 
 End Namespace
