@@ -11,14 +11,14 @@ using System.Drawing;
 
 namespace DarkLiteUO
 {
-    public class Script2 : IScriptInterface
+    public class Scriptlj : IScriptInterface
     {
         bool Debug;
         List<string> Journal = new List<string>();
         private ScriptTools Tools;
         private bool WaitForCliloc = false;
         ToFromCoords Range = new ToFromCoords();
-        uint[] TreeTiles;
+        ushort[] TreeTiles;
         Point Startloc = new Point();
         ushort[] AxeType;
         Serial DropChest;
@@ -28,8 +28,8 @@ namespace DarkLiteUO
             public ushort X;
             public ushort Y;
             public ushort Z;
-            public int ID;
-            public Tree(int X, int Y, int Z, int ID)
+            public ushort ID;
+            public Tree(int X, int Y, int Z, ushort ID)
             {
                 this.X = Convert.ToUInt16(X);
                 this.Y = Convert.ToUInt16(Y);
@@ -61,20 +61,20 @@ namespace DarkLiteUO
             Startloc.X = 2632;
             Startloc.Y = 907;
             AxeType = new ushort[2] { EUOToUshort("BSF"), 3907 };
-            TreeTiles = new uint[] { 3230, 3274, 3275, 3276, 3277, 3280, 3283, 3286, 3288, 3290, 3293, 3296, 3299, 3302 };
+            TreeTiles = new ushort[] { 3274, 3275, 3276, 3277, 3280, 3283, 3286, 3288, 3290, 3293, 3296, 3299, 3302 };
             DropChest = Tools.Tools.EUOToInt("XXGKKMD");
             ItemstoBank = new ushort[] { EUOToUshort("ZLK"), EUOToUshort("TLK"), EUOToUshort("YWS"), EUOToUshort("NWS"), EUOToUshort("BWR"), EUOToUshort("XWS"), EUOToUshort("FXS") };
 
-            Range.XRange = new Bound(-10, 10);
-            Range.YRange = new Bound(-10, 10);
-            try
-            {
+            Range.XRange = new Bound(-0, 20);
+            Range.YRange = new Bound(-0, 20);
+            Tools.Client.onCliLocSpeech += new LiteClient.onCliLocSpeechEventHandler(Client_onCliLocSpeech);
+            Tools.Client.onSpeech += new LiteClient.onSpeechEventHandler(Client_onSpeech);
                 while (myScriptRunning)
                 {
                     ChopLoop(); // Chops all the trees withing Range
                 }
-            }
-            catch { }
+                Tools.Client.onCliLocSpeech -= Client_onCliLocSpeech;
+                Tools.Client.onSpeech -= Client_onSpeech;
             Tools.GUI.UpdateLog("Script Ended");
         }
 
@@ -91,13 +91,12 @@ namespace DarkLiteUO
             foreach (Tree i in Treelist)
             {
                 Tree _Tree = i;
-                if (Tools.Tools.Get2DDistance(Tools.Client.Player.X, Tools.Client.Player.Y, _Tree.X, _Tree.Y) >= 2)
+                if (Tools.Tools.Get2DDistance(Tools.Client.Player.X, Tools.Client.Player.Y, _Tree.X, _Tree.Y) > 2)
                 {
                     Tools.Pathfind(_Tree.X, _Tree.Y, 1); // x/y/Tiles away from location to stop
                 }
                 Chop(_Tree);
-                Tools.Client.onCliLocSpeech -= Client_onCliLocSpeech;
-                Tools.Client.onSpeech -= Client_onSpeech;
+
                 if (Tools.Client.Player.Weight > Tools.Client.Player.MaxWeight - 50) { Bank(); }
                 if (!myScriptRunning) { return; }
             }
@@ -120,8 +119,7 @@ namespace DarkLiteUO
 
         private void Chop(Tree _Tree)
         {
-            Tools.Client.onCliLocSpeech += new LiteClient.onCliLocSpeechEventHandler(Client_onCliLocSpeech);
-            Tools.Client.onSpeech += new LiteClient.onSpeechEventHandler(Client_onSpeech);
+            
             Tools.GUI.UpdateLog("Chopping");
             while (true)
             {
@@ -145,12 +143,14 @@ namespace DarkLiteUO
                 Tools.Client.Player.Layers.RightHand.DoubleClick();
 
                 //Client.Items.byType(ref AxeType).FirstOrDefault<Item>().DoubleClick();
-                WaitForTarget(1500);
-                Tools.Client.Target(_Tree.X, _Tree.Y, _Tree.Z, (ushort)_Tree.ID);
-                Thread.Sleep(1000);
+                WaitForTarget(5000);
+                    Tools.GUI.UpdateLog("Targeting Tree");
+                    Tools.Client.Target(_Tree.X, _Tree.Y, _Tree.Z, _Tree.ID);
+
+                Thread.Sleep(100);
                 System.Diagnostics.Stopwatch timeout = new System.Diagnostics.Stopwatch();
                 timeout.Start();
-                while (timeout.ElapsedMilliseconds <= 3000)
+                while (timeout.ElapsedMilliseconds <= 4000)
                 {
                     if (Journal[0].Contains("not enough wood")) { return; }
                     if (Journal[0].Contains("you chop")) { break; }
@@ -186,27 +186,29 @@ namespace DarkLiteUO
             //UpdateLog("Clioc: " + Name + " : " + Client.CliLocStrings.get_Entry(CliLocNumber));
         }
 
-        private List<Tree> grabTile(uint[] TreeTiles, ToFromCoords range)
+        private List<Tree> grabTile(ushort[] TreeTiles, ToFromCoords range)
         {
             // takes a list of tree types and a range around char to search for them returns a list of trees
             List<Tree> _TreeList = new List<Tree>();
+            Ultima.Map mymap = Tools.Tools.Getmap(Tools.Client);
             for (int x = range.XRange.Lower; x <= range.XRange.Upper; x++)
             {
                 for (int y = range.YRange.Lower; y <= range.YRange.Upper; y++)
                 {
-                    Tile temptile = Ultima.Map.Trammel.Tiles.GetLandTile(x + Startloc.X, y + Startloc.Y);
-                    HuedTile[] temptile2 = Ultima.Map.Trammel.Tiles.GetStaticTiles(x + Startloc.X, y + Startloc.Y);
+                    
+                    HuedTile[] temptile2 = mymap.Tiles.GetStaticTiles(x + Startloc.X, y + Startloc.Y);
                     foreach (HuedTile T in temptile2)
-                    {
-                        if (TreeTiles.Contains<uint>((uint)T.ID))
+                    {  
+                        if (TreeTiles.Contains(T.ID))
                         {
-                            Tree mytree = new Tree(x + Startloc.X, y + Startloc.Y, temptile.Z, temptile.ID);
+                            Tree mytree = new Tree(x + Startloc.X, y + Startloc.Y, T.Z, T.ID);
                             _TreeList.Add(mytree);
                         }
                     }
-                    if (TreeTiles.Contains<uint>((uint)temptile.ID))
+                    
+                    if (TreeTiles.Contains(mymap.Tiles.GetLandTile(x + Startloc.X, y + Startloc.Y).ID))
                     {
-                        Tree mytree = new Tree(x + Startloc.X, y + Startloc.Y, temptile.Z, temptile.ID);
+                        Tree mytree = new Tree(x + Startloc.X, y + Startloc.Y, mymap.Tiles.GetLandTile(x + Startloc.X, y + Startloc.Y).Z, mymap.Tiles.GetLandTile(x + Startloc.X, y + Startloc.Y).ID);
                         _TreeList.Add(mytree);
                     }
                 }

@@ -10,7 +10,7 @@ using Ultima;
 using DarkLiteUO;
 namespace DarkLiteUO
 {
-    public class Script : IScriptInterface
+    public class Script2 : IScriptInterface
     {
         ScriptTools Tools;
         
