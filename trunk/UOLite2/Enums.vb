@@ -415,6 +415,52 @@ Namespace Enums
         End Enum
 
         Public Enum ItemTypes As UShort
+            'Lotus
+
+
+            crateSmall = 3645
+            crateMedium = 3646
+            crateLarge = 3647
+            metalchestE = 3648
+            metalchestS = 3649
+            woodenchestE = 3650
+            woodenchestS = 3651
+
+
+            Batwings = 3960
+            Blackmoor = 3961
+            Bloodspawn = 3964
+            DaemonBlood = 3965
+            Bones = 3966
+            Brimstone = 3967
+            DaemonBones = 3968
+            FertileDirt = 3969
+            DragonsBlood = 3970
+            ExecutionersCap = 3971
+
+            EyesofNewt = 3975
+
+            Obsidian = 3977
+            PigIron = 3978
+            Pumice = 3979
+            NoxCrystal = 3982
+            GraveDust = 3983
+            DeadWood = 3984
+            blankscrolls = 3827
+            anvilE = 4015
+            anvilS = 4016
+            forgeSmall = 4017
+            scrolls1 = 3637
+            scrolls2 = 3638
+            scrolls3 = 3639
+            scrolls4 = 3640
+            scrolls5 = 3641
+            scrolls6 = 3642
+            spellbook = 3643
+            'End Lotus
+
+
+
             GoldCoins = 3821
 
             Pouch = 3705

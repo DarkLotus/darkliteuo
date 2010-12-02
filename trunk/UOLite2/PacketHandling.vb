@@ -209,6 +209,9 @@ Partial Class LiteClient
                 Case UOLite2.Enums.PacketType.ShowItem
                     Return New Packets.ShowItem(packetbuffer)
 
+                Case UOLite2.Enums.PacketType.ShowItemSA
+                    Return New Packets.ShowItemSA(packetbuffer)
+
                 Case UOLite2.Enums.PacketType.DoubleClick
                     Return New Packets.Doubleclick(packetbuffer)
 
@@ -430,7 +433,14 @@ Partial Class LiteClient
 #If DebugGamePackets Then
                 Debug.WriteLine("Show Item")
 #End If
+            Case UOLite2.Enums.PacketType.ShowItemSA
+                Items.Add(DirectCast(currentpacket, Packets.ShowItemSA))
 
+                Scavenger.CheckForPickup(DirectCast(currentpacket, Packets.ShowItemSA).Serial)
+
+#If DebugGamePackets Then
+                Debug.WriteLine("Show Item SA")
+#End If
             Case UOLite2.Enums.PacketType.Target
 #If DebugGamePackets Then
                 Debug.WriteLine("Target Request")
@@ -886,7 +896,7 @@ Partial Class LiteClient
             _LoginClient = New TcpClient()
             _LoginClient.ReceiveBufferSize = PacketSize
             _LoginClient.Connect(Address, Port)
-
+            '_LoginClient.Client = SocksClient.Socks.ConnectViaSocks4("117.79.94.159", 1080, Address, Port)
         Catch ex As Exception
             Return "ERROR: Unable to connect to login server: " & ex.Message
         End Try

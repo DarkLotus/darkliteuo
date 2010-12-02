@@ -95,7 +95,7 @@
         tpacket.X = X
         tpacket.Y = Y
         tpacket.Z = Z
-
+        tpacket.Artwork = Graphic
         Send(tpacket)
     End Sub
 

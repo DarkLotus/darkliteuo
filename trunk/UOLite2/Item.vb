@@ -168,7 +168,15 @@ Public Class Item
     Public Sub Take(ByVal Amount As UShort)
         _Client.ActionBuffer.Add(SupportClasses.ActionBufferClass.ActionType.PickupItem, Serial, Amount)
     End Sub
+    Public Sub Move(ByRef TargetContainer As Serial, ByVal amountt As UShort)
+        Take(amountt)
 
+        While _Client.PlayerBusy
+            'Wait for the player to no longer be busy.
+        End While
+
+        _Client.DropItem(TargetContainer)
+    End Sub
     Public Sub Move(ByRef TargetContainer As Serial)
         Take(Amount)
 
