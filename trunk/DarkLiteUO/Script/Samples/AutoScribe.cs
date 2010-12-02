@@ -80,8 +80,7 @@ namespace DarkLiteUO
             Item Pen; // 
             Client.onNewGump += new LiteClient.onNewGumpEventHandler(Client_onNewGump); // Grab the event fired on new gumps
             while (true)
-            {
-                
+            {     
                 Pen = Client.Items.byType(ref ToolType).First(); // sets our pen to the first found object
                 if (Pen == null) { break; } // no pens we exit script
                 Pen.DoubleClick();
@@ -145,7 +144,7 @@ namespace DarkLiteUO
         private void Bank()
         {
             T.Recall(RunebookID, HomeruneNum );
-            T.Finditem((ushort)ItemTypes.GoldCoins, Client.Player.Layers.BackPack.Serial).Move(ref BankChest);
+            T.Finditem((ushort)ItemTypes.GoldCoins, Client.Player.Layers.BackPack.Serial).Move(ref BankChest,5000);  
             T.Recall(RunebookID, ShopruneNum);
         }
 

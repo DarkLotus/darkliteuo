@@ -61,6 +61,8 @@ namespace DarkLiteUO
             _rune = Runenum;
             Client.Items.get_Item(RunebookID).DoubleClick();
             Thread.Sleep(5000);// Replace with X/Y check and timeout
+            
+            // maybe check for the packet that updates x/y should only be sent if recall succeeded, then we know we recalled even if x/y is same, just means already there
         }
 
         private void Runebookgumphandler(ref LiteClient Client, ref Gump Gump)
@@ -144,7 +146,7 @@ namespace DarkLiteUO
                 return xdif;
             }
         }
-        public void GumpMenuSelection(uint ID, uint GumpID, uint ButtonID)
+        public void GumpMenuSelection(uint Serial, uint GumpID, uint ButtonID)
         {
             // static size atm buttons only
             byte[] packet = new byte[23];
@@ -152,7 +154,7 @@ namespace DarkLiteUO
             packet[1] = 0x00;
             packet[2] = 0x17;
             
-            AddtoArray(3, ref packet, uintToByteArray(ID));
+            AddtoArray(3, ref packet, uintToByteArray(Serial));
             AddtoArray(7, ref packet, uintToByteArray(GumpID));
             AddtoArray(11, ref packet, uintToByteArray(ButtonID));
             AddtoArray(15, ref packet, uintToByteArray(0));

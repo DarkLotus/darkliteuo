@@ -9,7 +9,7 @@ using UOLite2.SupportClasses;
 using Ultima;
 namespace DarkLiteUO
 {
-public class Gater : IScriptInterface
+public class Script : IScriptInterface
     {
         ScriptTools ST;
         Serial Runebookserial;
@@ -35,30 +35,34 @@ public class Gater : IScriptInterface
             bool docast = true;
             while (myScriptRunning)
             {
+                docast = true;
                 HashSet<Item> gates = ST.Client.Items.byType(ref gatetype); // get a list of all gates
                 if (gates != null)
                 {
-                    foreach (Item i in gates) // Lopp thru all the found gates
+                    foreach (Item i in gates) // Loop thru all the found gates
                     {
-
                         if ((i.X == ST.Client.Player.X) && (i.Y == ST.Client.Player.Y))
                         {
+                            ST.GUI.UpdateLog("Gate found Waiting"); Thread.Sleep(2000);
                             docast = false; // if the gates x/y is same as players dont cast.
                         }
 
                     }
                 }
-                else
-                {
-                    docast = true; // No gates under us found so we can cast
-                }
+                   
+                
                 if (docast)
                 {
                     ST.Tools.Speak(mymsg);
                     ST.Client.Targeting = false; // Seems to fix some random issues
                     ST.Client.CastSpell(UOLite2.Enums.Spell.GateTravel);
-                    while (!ST.Client.Targeting) { Thread.Sleep(10); } // wait for the target cursor
-                    ST.Client.Target(Runebookserial);
+                    Thread.Sleep(5000);
+                    //while (!ST.Client.Targeting) { Thread.Sleep(10); } // wait for the target cursor
+                    if (ST.Client.Targeting)
+                    {
+                        ST.GUI.UpdateLog("Targeting runebook");
+                        ST.Client.Target(Runebookserial);
+                    }
                     Thread.Sleep(5000);
                 }
                 Thread.Sleep(100);

@@ -112,8 +112,9 @@ namespace DarkLiteUO
             List<Point> mypath = new List<Point>();
             List<node> Openlist = new List<node>();
             List<node> Closedlist = new List<node>();
+            //Add our location to the open list
             Openlist.Add(new node(Client.Player.X, Client.Player.Y, mymap.Tiles.GetLandTile(Client.Player.X, Client.Player.Y).Z, mymap.Tiles.GetLandTile(Client.Player.X, Client.Player.Y).ID, 0));
-            Openlist.Add(new node(Client.Player.X, Client.Player.Y, mymap.Tiles.GetLandTile(Client.Player.X, Client.Player.Y).Z, mymap.Tiles.GetLandTile(Client.Player.X, Client.Player.Y).ID, 0));
+            //Openlist.Add(new node(Client.Player.X, Client.Player.Y, mymap.Tiles.GetLandTile(Client.Player.X, Client.Player.Y).Z, mymap.Tiles.GetLandTile(Client.Player.X, Client.Player.Y).ID, 0));
 
             while (Openlist.Count > 0)
             {
@@ -123,6 +124,7 @@ namespace DarkLiteUO
                 Closedlist.Add(Current);
 
                 //if ((Current.X == end.X) && (Current.Y == end.Y))
+                // returns the path once we are close enough to target
                 if (Get2DDistance(Current.X, Current.Y, end.X, end.Y) <= accuracy)
                 {
                     while (Current.Parent != null)
@@ -133,13 +135,13 @@ namespace DarkLiteUO
                     return mypath;
 
                 }
+                // gets the 4-8 walkable tiles around the current node
                 Neighbours = GetNeighbours(Current.X, Current.Y, ref mymap);
                 foreach (node mynode in Neighbours)
                 {
 
-                    // Hack for pathfinding to trees. Ignores the last tile being blocked.
-
-                    if (accuracy == 1 && ((mynode.X == end.X) && (mynode.Y == end.Y)))
+                    // Hack for pathfinding to a blocked location like a tree. Will ignore the last tile being blocked if the accuracy is > 1
+                    if (accuracy >= 1 && ((mynode.X == end.X) && (mynode.Y == end.Y)))
                     {
                         node tempnode = mynode;
                         tempnode.Parent = Current;
@@ -149,9 +151,10 @@ namespace DarkLiteUO
                         //tempnode.Cost = 10 + (10 * Get2DDistance(tempnode.X,tempnode.Y,end.X,end.Y));
                         Openlist.Add(tempnode);
                     }
-
+                    // if the node isnt blocked
                     if ((!mynode.Blocked(ref Client)) && (!Closedlist.Contains(mynode)))
                     {
+                        // If the node is already in the openlist, check to see if our current path to the tile is better than the old one
                         if (Openlist.Exists(delegate(node Mynode) { return ((Mynode.X == mynode.X) && (Mynode.Y == mynode.Y)); }))
                         {
                             node nn = Openlist.Find(delegate(node Mynode) { return ((Mynode.X == mynode.X) && (Mynode.Y == mynode.Y)); });
@@ -165,13 +168,13 @@ namespace DarkLiteUO
                                 Openlist.Add(nn);
                             }
 
-                        }
+                        }// just add it like normal
                         else
                         {
                             node tempnode = mynode;
                             tempnode.Parent = Current;
                             tempnode.G = tempnode.G + Current.G;
-                            tempnode.H = 10 * (Math.Abs(tempnode.X - end.X) + Math.Abs(tempnode.Y - end.Y));
+                            tempnode.H = 10 * (Math.Abs(tempnode.X - end.X) + Math.Abs(tempnode.Y - end.Y)); // Manhattan distance
                             tempnode.F = tempnode.G + tempnode.H;
                             //tempnode.Cost = 10 + (10 * Get2DDistance(tempnode.X,tempnode.Y,end.X,end.Y));
                             Openlist.Add(tempnode);
@@ -180,6 +183,8 @@ namespace DarkLiteUO
                     }
                     else { Closedlist.Add(mynode); }
                 }
+                // sort the open list so the lowest path cost is at the top.
+                // very very slow on large open lists, for long paths we need to split the route up, or preferably cull nodes that have very bad scores, ie tiles in wrong direction.
                 Openlist.Sort();
                 //if (Openlist.Count > 1000) { Openlist.RemoveRange(1000, Openlist.Count - 1001); }
 
@@ -269,7 +274,7 @@ namespace DarkLiteUO
             }
             public bool Blocked(ref UOLite2.LiteClient Client)
             {
-
+                // Need to add checking for multis
                 HuedTile[] temptiles = Getmap(ref Client).Tiles.GetStaticTiles(X, Y);
                 //HuedTile[][][] mm = Ultima.Map.Trammel.Tiles.GetStaticBlock(X, Y);
 
@@ -291,6 +296,7 @@ namespace DarkLiteUO
             }
             public Map Getmap(ref LiteClient Client)
             {
+                // returns a Map object for the players current facet
                 Map mymap;
                 switch (Client.Player.Facet)
                 {

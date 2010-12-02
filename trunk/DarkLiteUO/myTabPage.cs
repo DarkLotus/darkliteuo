@@ -48,7 +48,7 @@ namespace DarkLiteUO
             Client.onCliLocSpeech += new LiteClient.onCliLocSpeechEventHandler(Client_onCliLocSpeech);
             Client.onSpeech += new LiteClient.onSpeechEventHandler(Client_onSpeech);
             Client.onCharacterListReceive += new UOLite2.LiteClient.onCharacterListReceiveEventHandler(Client_onCharacterListReceive);
-            //Client.onPacketReceive += new UOLite2.LiteClient.onPacketReceiveEventHandler(Client_onPacketReceive);
+            Client.onPacketReceive += new UOLite2.LiteClient.onPacketReceiveEventHandler(Client_onPacketReceive);
             Client.onConnectionLoss += new LiteClient.onConnectionLossEventHandler(Client_onConnectionLoss);
             //Client.onMovementBlocked += new LiteClient.onMovementBlockedEventHandler(Client_onMovementBlocked);
             //Client.onNewGump += new LiteClient.onNewGumpEventHandler(Client_onNewGump);
