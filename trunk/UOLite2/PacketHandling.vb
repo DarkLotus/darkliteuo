@@ -185,6 +185,9 @@ Partial Class LiteClient
                 Case UOLite2.Enums.PacketType.HPHealth
                     Return New Packets.HPHealth(packetbuffer)
 
+                Case UOLite2.Enums.PacketType.MOBname
+                    Return New Packets.MOBname(packetbuffer)
+
                 Case UOLite2.Enums.PacketType.ManaHealth
                     Return New Packets.ManaHealth(packetbuffer)
 
@@ -359,7 +362,12 @@ Partial Class LiteClient
 #If DebugGamePackets Then
                 Debug.WriteLine("HP Health")
 #End If
+            Case UOLite2.Enums.PacketType.MOBname
+                _Mobiles.Mobile(DirectCast(currentpacket, Packets.MOBname).Serial).HandleUpdatePacket(DirectCast(currentpacket, Packets.MOBname))
 
+#If DebugGamePackets Then
+                Debug.WriteLine("MOBname")
+#End If
             Case UOLite2.Enums.PacketType.FatHealth
                 _Mobiles.Mobile(DirectCast(currentpacket, Packets.FatHealth).Serial).HandleUpdatePacket(DirectCast(currentpacket, Packets.FatHealth))
 

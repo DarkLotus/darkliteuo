@@ -2242,6 +2242,46 @@ Namespace Packets
     End Class
 
     ''' <summary>
+    ''' This is sent by the server to tell you a mobs name
+    ''' </summary>
+    Public Class MOBname
+        Inherits Packet
+        Private _name As String
+        Private _Serial As Serial
+        Sub New(ByVal bytes() As Byte)
+            MyBase.New(UOLite2.Enums.PacketType.MOBname)
+            buff = New UOLite2.SupportClasses.BufferHandler(bytes, True)
+            _size = bytes.Length
+            _Data = bytes
+
+            With buff
+                .Position = 3
+                _Serial = .readuint
+                _name = .readstr
+            End With
+        End Sub
+        Public Property Name() As String
+            Get
+                Return _name
+            End Get
+            Set(ByVal value As String)
+                _name = value
+                buff.Position = 7
+                buff.writestr(value)
+            End Set
+        End Property
+        Public Property Serial() As Serial
+            Get
+                Return _Serial
+            End Get
+            Set(ByVal value As Serial)
+                _Serial = value
+                buff.Position = 7
+                buff.writestr(value.Value)
+            End Set
+        End Property
+    End Class
+    ''' <summary>
     ''' This is sent by the server to tell the client to update a Mobile's health and max health.
     ''' </summary>
     Public Class HPHealth
@@ -4658,7 +4698,7 @@ Namespace Enums
         HuePicker = &H95
         GameCentralMonitor = &H96
         MovePlayer = &H97
-        MOBName = &H98
+        MOBname = &H98
         TargetMulti = &H99
         TextEntry = &H9A
         RequestAssistance = &H9B

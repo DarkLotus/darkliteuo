@@ -25,8 +25,8 @@ Partial Class LiteClient
         ''' Adds the specified mobile to the mobile list.
         ''' </summary>
         Public Sub AddMobile(ByVal Mobile As Mobile)
-
             _MobileHashBySerial.Add(Mobile.Serial, Mobile)
+
             'TODO: Make an AddHash sub for post-packet handling to add this to the memory offset hash.
             '_MobileHashByOffset.Add(Mobile.MemoryOffset, Mobile
 
@@ -34,6 +34,16 @@ Partial Class LiteClient
             Console.WriteLine("-Added Mobile: " & Mobile.Serial.ToString)
 #End If
             RaiseEvent AddedMobile(Mobile)
+
+            Dim buff As New UOLite2.SupportClasses.BufferHandler(7, True)
+            With buff
+                .writebyte(&H98)
+                .writeushort(7)
+                .writeuint(Mobile.Serial.Value)
+            End With
+            _Client.Send(buff.buffer)
+
+
         End Sub
 
         ''' <summary>
