@@ -22,22 +22,25 @@ namespace DarkLiteUO
             public String name;
             public TreeNode node;
         }
-        public UOLite2.Item Item;
-        public UOLite2.LiteClient Client = new UOLite2.LiteClient(Ultima.Files.Directory);
-        private UOLite2.Serial _Player = new UOLite2.Serial(0);
-        private UOLite2.Mobile _Mount = null;
+        private UOLite2.LiteClient Client = new UOLite2.LiteClient(Ultima.Files.Directory);
+       // private UOLite2.Serial _Player = new UOLite2.Serial(0);
+       // private UOLite2.Mobile _Mount = null;
         private bool bConnected = false;
         //Script myscript;
         private Thread ScriptThread;
         delegate void SetTextCallback(string text);
         
         private String _name = "";
+
         public myTabPage(config config)
         {
             _config = config;
             _name = config.Username;
             //this.Name = config.Username;
             this.Text = config.Username;
+            InitializeComponent();
+            setuptreeview();
+
             //Client.onSkillUpdate += new LiteClient.onSkillUpdateEventHandler(Client_onSkillUpdate);
             Client.onRecievedServerList += new LiteClient.onRecievedServerListEventHandler(Client_onRecievedServerList);
             Client.onLoginConfirm += new LiteClient.onLoginConfirmEventHandler(Client_onLoginConfirm);
@@ -56,13 +59,9 @@ namespace DarkLiteUO
             //Client.onNewMobile += new LiteClient.onNewMobileEventHandler(Client_onNewMobile);
             //Client.onPlayerMove += new LiteClient.onPlayerMoveEventHandler(Client_onPlayerMove);
             //Client.onTargetRequest += new LiteClient.onTargetRequestEventHandler(Client_onTargetRequest);
-            Client.onNewMobile += new LiteClient.onNewMobileEventHandler(Client_onNewMobile);
+            //Client.onNewMobile += new LiteClient.onNewMobileEventHandler(Client_onNewMobile);
             Client.onPacketReceive += new LiteClient.onPacketReceiveEventHandler(Client_onPacketReceive);
-            
-            InitializeComponent();
-            setuptreeview();
             Connect();
-            
         }
         private void Connect()
         {

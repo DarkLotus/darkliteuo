@@ -141,7 +141,7 @@ namespace DarkLiteUO
             switch (bytes[0])
             {
                 case 0x98: // All Names
-                    HandleAllNames(bytes);
+                    //HandleAllNames(bytes);
                     break;
                 default:
                     break;
@@ -158,7 +158,7 @@ namespace DarkLiteUO
             Serial serial = new Serial(id);
             if (serial != Client.Player.Serial)
             {
-                Client.Mobiles.get_Mobile(serial)._Name = name;
+               // Client.Mobiles.get_Mobile(serial)._Name = name;
                 //UpdateLog("Setting npc name to: " + Client.Mobiles.get_Mobile(serial).Name + id);
             }
         }
