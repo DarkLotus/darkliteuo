@@ -58,6 +58,7 @@ namespace DarkLiteUO
             {
                 config config = (config)cmbProfileList.SelectedItem;
                 myTabPage page2 = new myTabPage(config);
+               
                 tabMain.TabPages.Add((TabPage)page2);
             }
             catch { }
