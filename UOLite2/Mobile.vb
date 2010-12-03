@@ -16,7 +16,7 @@ Public Class Mobile
     End Sub
 
 #Region "Private Variables"
-    Public _Name As String = ""
+    Friend _Name As String = ""
     Friend _Status As UOLite2.Enums.MobileStatus
     Friend _Notoriety As UOLite2.Enums.Reputation
     Friend _Hits As UShort = 1
@@ -908,6 +908,9 @@ Public Class Mobile
         RaiseEvent onUpdate(_Client, Me, Enums.MobileUpdateType.FullUpdate)
     End Sub
 
+
+
+
     Friend Sub HandleUpdatePacket(ByVal Packet As Packets.HPHealth)
         _Hits = Packet.Hits
         _HitsMax = Packet.HitsMax
@@ -934,6 +937,15 @@ Public Class Mobile
             Console.WriteLine("-Updated Mobile Stamina: " & Packet.Serial.ToString)
 #End If
         RaiseEvent onUpdate(_Client, Me, Enums.MobileUpdateType.Stamina)
+    End Sub
+
+
+    Friend Sub HandleUpdatePacket(ByVal Packet As Packets.MOBname)
+        _Name = Packet.Name
+#If DebugMobiles Then
+            Console.WriteLine("-Updated Mobile Name: " & Packet.Serial.ToString)
+#End If
+
     End Sub
 
     Friend Sub HandleUpdatePacket(ByVal Packet As Packets.EquipItem)
