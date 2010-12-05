@@ -111,6 +111,7 @@
     <Compile Include="Script\Features\ScriptCompiler.cs" />
     <Compile Include="Script\SampleScripts.cs" />
     <Compile Include="Script\Samples\AutoScribe.cs" />
+    <Compile Include="Script\Samples\RecallMining.cs" />
     <Compile Include="Script\Samples\Scribe.cs" />
     <Compile Include="Script\Samples\Gater.cs" />
     <Compile Include="Script\Scripttest.cs" />

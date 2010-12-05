@@ -22,7 +22,9 @@ namespace DarkLiteUO
             public String name;
             public TreeNode node;
         }
-        private UOLite2.LiteClient Client = new UOLite2.LiteClient(Ultima.Files.Directory);
+        [ThreadStaticAttribute] 
+        private UOLite2.LiteClient Client =  new UOLite2.LiteClient(Ultima.Files.Directory);
+        
        // private UOLite2.Serial _Player = new UOLite2.Serial(0);
        // private UOLite2.Mobile _Mount = null;
         private bool bConnected = false;
@@ -60,7 +62,7 @@ namespace DarkLiteUO
             //Client.onPlayerMove += new LiteClient.onPlayerMoveEventHandler(Client_onPlayerMove);
             //Client.onTargetRequest += new LiteClient.onTargetRequestEventHandler(Client_onTargetRequest);
             //Client.onNewMobile += new LiteClient.onNewMobileEventHandler(Client_onNewMobile);
-            Client.onPacketReceive += new LiteClient.onPacketReceiveEventHandler(Client_onPacketReceive);
+            //Client.onPacketReceive += new LiteClient.onPacketReceiveEventHandler(Client_onPacketReceive);
             Connect();
         }
         private void Connect()

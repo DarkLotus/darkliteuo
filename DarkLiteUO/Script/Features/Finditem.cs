@@ -12,7 +12,15 @@ namespace DarkLiteUO
 
     public partial class _ScriptTools
     {
-
+        public UOLite2.Item Finditem(ushort[] type)
+        {
+            foreach (UOLite2.Item i in Client.Items.Items)
+            {
+                if (type.Contains(i.Type))
+                { return i; }
+            }
+            return null;
+        }
         public UOLite2.Item Finditem(ushort type)
         {
             foreach (UOLite2.Item i in Client.Items.Items)
