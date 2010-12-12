@@ -16,6 +16,7 @@ Partial Class LiteClient
 End Class
 
 Namespace SupportClasses
+
     Public Class Map
         Friend _MapFile As String, _StaticsFile As String, _StaIDXFile As String
         'Private _Tiles As New Dictionary(Of UInt64, SupportStructures.Tile)(16384) '4 64x64 sections of (4096) cells total.
