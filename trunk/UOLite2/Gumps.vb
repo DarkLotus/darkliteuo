@@ -58,6 +58,46 @@ Namespace SupportClasses
                 Return _Y
             End Get
         End Property
+
+        Public Sub GumpSelection(ByVal ButtonID As UInt32)
+            Dim buff As New BufferHandler(23, True)
+            buff.writebyte(Enums.PacketType.GumpResponse)
+            buff.writeushort(23)
+            buff.writeuint(_Serial)
+            buff.writeuint(_GumpID)
+            buff.writeuint(ButtonID)
+            buff.writeuint(0)
+            _Client.Send(buff.buffer)
+        End Sub
+        Public Sub GumpSelection(ByVal ButtonID As UInt32, ByVal SwitchID As UInt32)
+            Dim buff As New BufferHandler(23, True)
+            buff.writebyte(Enums.PacketType.GumpResponse)
+            buff.writeushort(23)
+            buff.writeuint(_Serial)
+            buff.writeuint(_GumpID)
+            buff.writeuint(ButtonID)
+            buff.writeuint(1)
+            buff.writeuint(SwitchID)
+            buff.writeuint(0)
+            _Client.Send(buff.buffer)
+        End Sub
+        Public Sub GumpSelection(ByVal ButtonID As UInt32, ByVal Text As String, ByVal textID As UInt32)
+            Dim temp As New BufferHandler(50, True) ' safe? text wont be longer i dont think
+            temp.writeustr(Text)
+            Dim buff As New BufferHandler(27 + temp.Position, True)
+            buff.writebyte(Enums.PacketType.GumpResponse)
+            buff.writeushort(27 + temp.Position)
+            buff.writeuint(_Serial)
+            buff.writeuint(_GumpID)
+            buff.writeuint(ButtonID)
+            buff.writeuint(0) 'zero switches
+            buff.writeuint(1) ' text entry
+            buff.writeushort(textID)
+            buff.writeushort(Text.Length)
+            buff.writestr(Text)
+
+            _Client.Send(buff.buffer)
+        End Sub
         Friend Sub New(ByRef GumpPacket As Packets.CompressedGump, ByRef Client As LiteClient)
             _Client = Client
             _GumpID = GumpPacket.GumpID
