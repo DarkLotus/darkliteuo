@@ -3323,37 +3323,26 @@ Namespace Packets
             buff = New UOLite2.SupportClasses.BufferHandler(bytes, True)
 
             With buff
-                .Position = 1
+                .Position = 3
 
-                Dim CharCount As Byte = bytes(3)
+                Dim CharCount As Byte = .readbyte()
 
                 Dim NameBytes(29) As Byte
                 Dim PasswordBytes(29) As Byte
 
                 Dim Character As New Structures.CharListEntry
-
                 For i As Integer = 0 To CharCount - 1
-
-                    'Get The Name
-                    For s As Integer = i + 4 To i + 33
-                        NameBytes(s - (i + 4)) = bytes((i * 60) + s)
-                    Next
-
-                    For s As Integer = i + 34 To i + 63
-                        PasswordBytes(s - (i + 34)) = bytes((i * 60) + s)
-                    Next
-
-                    If NameBytes(0) = 0 Then
-                        Exit For
-                    Else
-                        Character.Name = System.Text.Encoding.ASCII.GetString(NameBytes).Replace(Chr(0), "")
-                        Character.Password = System.Text.Encoding.ASCII.GetString(PasswordBytes).Replace(Chr(0), "")
-                        Character.Slot = i
-                        _CharList.Add(Character)
-                        Character = New Structures.CharListEntry
-                    End If
-
+                    .networkorder = False
+                    NameBytes = .readbytes(30)
+                    PasswordBytes = .readbytes(30)
+                    Character.Name = System.Text.Encoding.ASCII.GetString(NameBytes).Replace(Chr(0), "")
+                    Character.Password = System.Text.Encoding.ASCII.GetString(PasswordBytes).Replace(Chr(0), "")
+                    Character.Slot = i
+                    _CharList.Add(Character)
+                    Character = New Structures.CharListEntry
                 Next
+
+
 
             End With
         End Sub
