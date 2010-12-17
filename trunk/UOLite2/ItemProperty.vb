@@ -59,12 +59,16 @@
         Friend Sub New(ByRef Item As Item, ByRef Properties As HashSet(Of SupportClasses.ItemProperty))
             _item = Item
             Dim Jack As New Hashtable
+            Try
 
-            For Each p As ItemProperty In Properties
-                Jack.Add(p.Cliloc.Number, p)
-                _Indexes.Add(p._Index, p.Cliloc.Number)
-            Next
 
+                For Each p As ItemProperty In Properties
+                    Jack.Add(p.Cliloc.Number, p)
+                    _Indexes.Add(p._Index, p.Cliloc.Number)
+                Next
+            Catch ex As Exception
+
+            End Try
             _Props = Jack
         End Sub
 
